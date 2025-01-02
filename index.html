@@ -1,120 +1,151 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh">
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>字符显示器</title>
-
-  <link rel="stylesheet" href="src/css/Material+Icons.css">
-  <link rel="stylesheet" href="src/css/mainStyles.css">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="script.js"></script>
-  <script defer src="src/js/dark.js"></script>
+<head><title>遠見齋｜字形檢索</title><meta charset="utf-8">
+<script defer src="../src/js/changeHeader.js"></script>
+<link rel="stylesheet" href="../src/css/mainStyles.css">
+<link rel="stylesheet" href="../src/css/materialInput.css">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./switch.css">
+<script>
+	var time;
+	var popup;
+	var q;
+	function pop(ch)
+	{
+		time = 0;
+		var btnValue = document.getElementsByClassName("set-v2-popup-symbol")[0];
+		btnValue.innerHTML = ch;
+		popup = document.getElementsByClassName("set-v2-popup")[0];
+		clearInterval(q);
+		q = setInterval(function(){opa()},50);	
+	}
+	function opa()
+	{
+		var op;
+		if (time < 0.5)
+			{
+				op= - 4 * time * time + 4 * time;
+			}
+		else if (time >1)
+			{
+				op = - 4 * time * time + 8 * time - 3;
+			}
+		else
+			{
+				op = 1;
+			}
+		popup.style = "display: block;opacity: " + op + ";";
+		if (op < 0)
+			{
+				op = 0;
+				time = -0.05;
+				popup.style = "display: none;";
+				clearInterval(q);
+			}
+		time += 0.05;
+	}
+</script>
 </head>
 <body>
-  <header>
-    <h1 id="title-h1"></h1>
-  </header>
-  <div id="content">
-    <iframe id="main-content" src="src/html/charDisplay.html"></iframe>
-    <div id="toolbox">
-      <h2>字符工具</h2>
-      <hr>
-      <div class="grid-tool-buttons">
-        <button class="tool-button" data-url="src/html/charDisplay.html">字符显示器</button>
-        <button class="tool-button" data-url="src/html/randStr.html">随机字符生成器</button>
-        <button class="tool-button" data-url="src/html/strokes.html">84-30画的汉字</button>
-        <button class="tool-button" data-url="src/html/styleLetter.html">字母样式生成器</button>
-        <button class="tool-button" data-url="src/html/zalog.html">zalog文本生成器</button>
-        <button class="tool-button" data-url="src/html/idsParser.html">IDS解析器</button>
-        <button class="tool-button" data-url="glyphs/index.html">离线字形检索</button>
-      </div>
 
-      <h2>其他工具</h2>
-      <hr>
-      <button class="tool-button" data-url="src/html/CPStest.html">CPS测试器</button>
-      <button class="tool-button" data-url="src/html/SIprefix.html">SI词头</button>
-      <button class="tool-button" data-url="src/html/audioFFT.html">音频FFT</button>
+<div id="main">
 
-      <h2>娱乐</h2>
-      <hr>
-      <div class="grid-tool-buttons">
-        <button class="tool-button" data-url="src/html/GuClock.html">“骨”钟</button>
-        <button class="tool-button" data-url="src/html/DouCompass.html">“⿵門丶”指南针</button>
-        <button class="tool-button" data-url="src/html/HuAccelerometer.html">“户”加速度计</button>
-        <button class="tool-button" data-url="src/html/lifeGame.html">生命游戏</button>
-        <button class="tool-button" data-url="src/html/pointMoveWithSeg.html">点在移动时的连线</button>
-        <button class="tool-button" data-url="src/html/randFuck.html">随机草人器</button>
-        <button class="tool-button" data-url="index.html">套娃</button>
-      </div>
+<!-- UI 画面区 -->
+<div id="sk_header">
+	<div id="sk_logo">
+		<h1>遍黑查形</h1>
+		<h3>可检索<span id="datasize"></span>字</h3>
+	</div>
+	<div id="sk_toolbar">
+		<input id="input" class="han" />
+		<button title="清除" id="buttClear">清</button>
+		<button title="解构" id="buttDecompose">拆</button>
+		<!--button title="独体" onclick="UI.clearFind();UI.key('#')"><b>#</b></button-->
+		<button title="查找" id="buttGo">查</button>
+	</div>
+</div>
 
-      <h2>在线</h2>
-      <hr>
-      <div class="online">
-        <div>
-          <p>内嵌</p>
-          <button class="tool-button inner-online-tool" data-url="https://zi.tools/">字统网</button>
-          <button class="tool-button inner-online-tool" data-url="http://yedict.com/">字海网</button>
-          <button class="tool-button inner-online-tool" data-url="https://seek.vistudium.top/">字形检索</button>
-          <button class="tool-button inner-online-tool" data-url="http://demo.foundertype.com/">方正生僻字输入法</button>
-        </div>
-        <div>
-          <p>外部</p>
-          <button class="tool-button online-tool" data-url="https://zi.tools/">字统网</button>
-          <button class="tool-button online-tool" data-url="http://yedict.com/">字海网</button>
-          <button class="tool-button online-tool" data-url="https://seek.vistudium.top/">字形检索</button>
-          <button class="tool-button online-tool" data-url="http://demo.foundertype.com/">方正生僻字输入法</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div id="funcs">
+	<span>・遍黑体扩展B区尚有许多字未完成，将会显示成宋体。</span>
+	<div>
+	<div>包含异体<label class="md-switch"><input type="checkbox" id="variant" onclick="UI.setMode(this, 'variant')"><span class="track"><span class="thumb"></span></span></label></div>
+	<div>强行拆分<label class="md-switch"><input type="checkbox" id="subdivide" onclick="UI.setMode(this, 'subdivide')"><span class="track"><span class="thumb"></span></span></label></div>
+	<div>部件键盘<label class="md-switch"><input type="checkbox" id="showkeypad"><span class="track"><span class="thumb"></span></span></label></div>
+	</div>
+	<span id="scKey" class="grp">快捷栏：</span>
+</div>
 
-  <nav>
-    <a class="menuItem active" data-target="home">
-      <span class="material-icons">home</span>
-      <div class="menuItemName">主页</div>
-    </a>
-    <a class="menuItem" data-target="toolbox">
-      <span class="material-icons">build</span>
-      <div class="menuItemName">工具箱</div>
-    </a>
-  </nav>
+<div id="keyboard">
+	<div id="keypad"></div>
+</div>
 
-  <div class="sidebar-container">
-    <input type="checkbox" id="sidebar-toggle">
+<div id="result">
+	<div id="legend">
+		<!--<span class="sizebtn btn" onclick="UI.updatePad()">＋</span>
+		<span class="sizebtn btn" onclick="UI.updatePad()">－</span>　　　-->
+		<span class="zone"><button class="BSC" onclick="UI.key('#')">基</button>基本</span>
+		<span class="zone"><button class="ExA" onclick="UI.key('A')">A</button>A区</span>
+		<span class="zone"><button class="ExB" onclick="UI.key('B')">B</button>B区</span>
+		<span class="zone"><button class="ExC" onclick="UI.key('C')">C</button>C区</span>
+		<span class="zone"><button class="ExD" onclick="UI.key('D')">D</button>D区</span>
+		<span class="zone"><button class="ExE" onclick="UI.key('E')">E</button>E区</span>
+		<span class="zone"><button class="ExF" onclick="UI.key('F')">F</button>F区</span>
+		<span class="zone"><button class="ExG" onclick="UI.key('G')">G</button>G区</span>
+		<span class="zone"><button class="ExH" onclick="UI.key('H')">H</button>H区</span>
+		<span class="zone"><button class="ExI" onclick="UI.key('I')">I</button>I区</span>
+		<span class="zone"><button class="CMP" onclick="UI.key('X')">兼</button>兼容</span>
+		<span class="zone"><button class="SUP" onclick="UI.key('Y')">私</button>私用</span>
+		<span class="zone"><button class="OTH" onclick="UI.key('Z')">它</button>其它</span>
+		<span id="counter"></span>
+	</div>
+	<div id="groups" class="han">
+	</div>
+	<div id="output" class="han"></div>
+</div>
+<div id="popview">
+	<span id="bigchar" class="han"></span>
+	<span id="codetag"></span>
+	<span id="menu_key" class="func">输入</span>
+	<a id="menu_go" class="func" target="_blank">字统网查找</a>
+	<span id="menu_query" class="func">替换查找</span>
+	<span id="menu_copy" class="func">复制此字</span>
+	<span id="menu_skip" class="func">排除此字</span>
+	<span class="els">
+		<span id="menu_add" class="func">加入快捷栏</span>
+		<span id="menu_del" class="func">移出快捷栏</span>
+	</span>
+</div>
 
-    <label for="sidebar-toggle" class="sidebar-toggle-label">
-      <svg id="sidebar-toggle-svg" viewbox="0 0 100 100" width="30" height="30">
-        <path class="line" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
-        <path class="line" d="M 20,50 H 80" />
-        <path class="line" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
-      </svg>
-    </label>
+<div class="set-v2-popup" style="display: none;">
+	<div class="set-v2-popup-container">
+		<div class="set-v2-popup-block">
+			<div class="set-v2-popup-symbol"></div>
+			<div class="set-v2-popup-text">已复制！</div>
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript" src="js/jquery-3.6.0.min.js" encoding="utf-8"></script>
+<script type="text/javascript" src="js/handata_uni.js" encoding="utf-8"></script>
+<script type="text/javascript">
+var Config = {
+	// $CHR$ 表示未经编码的汉字变量
+	// $ENC$ 表示经URI编码的汉字变量
+	// $UCD$ 表示汉字的10进制Unicode变量
+	// $UCh$ 表示汉字的16进制小写Unicode变量
+	// $UCH$ 表示汉字的16进制大写Unicode变量
+	url: 'https://zi.tools/zi/$ENC$',
 
-    <div class="sidebar">
-      <div id="darkmode-container">
-        <input type="checkbox" id="darkmode-toggle">
-  
-        <label for="darkmode-toggle" id="darkmode-label">
-          <svg id="svg-light" viewbox="0 0 1024 1024" fill="#fff">
-            <path d="M587.264 104.96c33.28 57.856 52.224 124.928 52.224 196.608 0 218.112-176.128 394.752-393.728 394.752-29.696 0-58.368-3.584-86.528-9.728C223.744 832.512 369.152 934.4 538.624 934.4c229.376 0 414.72-186.368 414.72-416.256 1.024-212.992-159.744-389.12-366.08-413.184z" />
-            <path d="M340.48 567.808l-23.552-70.144-70.144-23.552 70.144-23.552 23.552-70.144 23.552 70.144 70.144 23.552-70.144 23.552-23.552 70.144zM168.96 361.472l-30.208-91.136-91.648-30.208 91.136-30.208 30.72-91.648 30.208 91.136 91.136 30.208-91.136 30.208-30.208 91.648z" />
-          </svg>
-          <svg id="svg-dark" viewbox="0 0 1024 1024">
-            <path
-              d="M234.24 512a277.76 277.76 0 1 0 555.52 0 277.76 277.76 0 1 0-555.52 0zM512 187.733a42.667 42.667 0 0 1-42.667-42.666v-102.4a42.667 42.667 0 0 1 85.334 0v102.826A42.667 42.667 0 0 1 512 187.733zm-258.987 107.52a42.667 42.667 0 0 1-29.866-12.373l-72.96-73.387a42.667 42.667 0 0 1 59.306-59.306l73.387 72.96a42.667 42.667 0 0 1 0 59.733 42.667 42.667 0 0 1-29.867 12.373zm-107.52 259.414H42.667a42.667 42.667 0 0 1 0-85.334h102.826a42.667 42.667 0 0 1 0 85.334zm34.134 331.946a42.667 42.667 0 0 1-29.44-72.106l72.96-73.387a42.667 42.667 0 0 1 59.733 59.733l-73.387 73.387a42.667 42.667 0 0 1-29.866 12.373zM512 1024a42.667 42.667 0 0 1-42.667-42.667V878.507a42.667 42.667 0 0 1 85.334 0v102.826A42.667 42.667 0 0 1 512 1024zm332.373-137.387a42.667 42.667 0 0 1-29.866-12.373l-73.387-73.387a42.667 42.667 0 0 1 0-59.733 42.667 42.667 0 0 1 59.733 0l72.96 73.387a42.667 42.667 0 0 1-29.44 72.106zm136.96-331.946H878.507a42.667 42.667 0 1 1 0-85.334h102.826a42.667 42.667 0 0 1 0 85.334zM770.987 295.253a42.667 42.667 0 0 1-29.867-12.373 42.667 42.667 0 0 1 0-59.733l73.387-72.96a42.667 42.667 0 1 1 59.306 59.306l-72.96 73.387a42.667 42.667 0 0 1-29.866 12.373z" />
-          </svg>
-        </label>
-      </div>
+	// GlyphWiki网站的图片网址，默认输出uxxxxx.svg
+	glyphwiki: 'https://seeki.vistudium.top/SVG/',
 
-      <button id="toggle-nav-button" class="toggle-nav-button">
-        <span class="material-icons">menu</span>
-      </button>
+	// 指定哪个Range要采用图片显示 (true=图片显示，false=文本显示)
+	// 1：基本；2：扩A。以此类推 5：D 
+	useImage: {1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 9: false, 10: false, 27: false, 28: false, 29: false, 30: false, 31: false},
+	resultStep1: 299,
+	resultStep2: 1999
+}
+</script>
+<script type="text/javascript" src="js/seeker.js" encoding="utf-8"></script>
 
-      <footer>
-        <p>codes by: <a href="https://github.com/tile-WWDCCS-name">-PT_AxH_RV-</a>, <a href="https://github.com/Losketch">Losketch</a>, etc.</p>
-        <p>fonts by: <a href="https://github.com/MY1L">MY1L</a>, <a href="https://github.com/Fitzgerald-Porthmouth-Koenigsegg">Fitzgerald P.K.</a>, etc.</p>
-      </footer>
-    </div>
-  </div>
-</body>
-</html>
+</body></html>
