@@ -1,0 +1,106 @@
+.md-switch {
+  --switch-width: 52px;
+  --switch-height: 32px;
+  --thumb-size: 24px;
+  --thumb-padding: 3px;
+  --track-border: 2px;
+  --distance-error: 2px;
+  position: relative;
+  display: inline-block;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  cursor: pointer;
+}
+
+/* 隐藏原生checkbox */
+.md-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 轨道样式 */
+.md-switch .track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;  /* 添加 flex 布局 */
+  align-items: center;  /* 垂直居中 */
+  background-color: var(--md-sys-color-surface-variant);
+  border: var(--track-border) solid var(--md-sys-color-on-secondary-container);
+  border-radius: var(--switch-height);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 滑块样式 */
+.md-switch .thumb {
+  position: absolute;
+  left: var(--thumb-padding);
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background-color: var(--md-sys-color-on-secondary-container);
+  border-radius: 50%;
+  transition: all 0.3s linear(0 0%, 0 1.8%, 0.01 3.6%, 0.03 6.35%, 0.07 9.1%, 0.13 11.4%, 0.19 13.4%, 0.27 15%, 0.34 16.1%, 0.54 18.35%, 0.66 20.6%, 0.72 22.4%, 0.77 24.6%, 0.81 27.3%, 0.85 30.4%, 0.88 35.1%, 0.92 40.6%, 0.94 47.2%, 0.96 55%, 0.98 64%, 0.99 74.4%, 1 86.4%, 1 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform-origin: center;  /* 设置变换原点为中心 */
+}
+
+/* 点击动画效果 */
+.md-switch input:active + .track .thumb {
+  transform: scale(1.1);
+}
+
+/* 选中状态样式 */
+.md-switch input:checked + .track {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+.md-switch input:checked + .track .thumb {
+  background-color: var(--md-sys-color-on-secondary);
+  transform: translateX(calc(var(--switch-width) - var(--thumb-size) - var(--thumb-padding) * 2 - var(--distance-error)));
+}
+
+/* 选中状态的点击动画 */
+.md-switch input:checked:active + .track .thumb {
+  transform: translateX(calc(var(--switch-width) - var(--thumb-size) - var(--thumb-padding) * 2 - var(--distance-error))) scale(1.1);
+}
+
+/* 波纹效果 */
+.md-switch .thumb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: currentColor;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.md-switch:active .thumb::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.1;
+}
+
+/* 悬停效果 */
+.md-switch:hover .thumb {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 焦点状态 */
+.md-switch input:focus-visible + .track {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* 禁用状态 */
+.md-switch input:disabled + .track {
+  opacity: 0.38;
+  cursor: not-allowed;
+}

@@ -2,71 +2,10 @@
 <html lang="zh">
 <head><title>遠見齋｜字形檢索</title><meta charset="utf-8">
 <script defer src="../src/js/changeHeader.js"></script>
-<style>
-	.set-v2-popup
-	{
-		position: fixed;
-	    z-index: 500000;
-	    top: 50%;
-	    left: 50%;
-	    display: none;
-	    width: 0;
-	    height: 0;
-	}
-	.set-v2-popup-container
-	{
-		position: relative;
-	    top: -75px;
-	    left: -100px;
-	    display: -webkit-box;
-	    display: -ms-flexbox;
-	    display: -webkit-flex;
-	    display: flex;
-	    -webkit-box-align: center;
-	    -ms-flex-align: center;
-	    -webkit-align-items: center;
-	    align-items: center;
-	    -webkit-box-pack: center;
-	    -ms-flex-pack: center;
-	    -webkit-justify-content: center;
-	    justify-content: center;
-	    width: 200px;
-	    height: 150px;
-	    text-align: center;
-	}
-	.set-v2-popup-block
-	{
-	    position: relative;
-	    display: inline-block;
-	    box-sizing: border-box;
-	    width: 140px;
-	    height: 96px;
-	    padding-top: 19px;
-	    color: white;
-	    border-radius: 8px;
-	    background: rgba(0,0,0,0.8);
-	}
-	.set-v2-popup-symbol
-	{
-	    height: 38px;
-	    font-size: 32px;
-	    font-family: PUAExt, plgo1, plgo2, Source, ffallback;
-	    line-height: 38px;
-	}
-	.set-v2-popup-text
-	{
-	    position: absolute;
-	    right: 0;
-	    bottom: 15px;
-	    left: 0;
-	    width: 100%;
-	    vertical-align: bottom;
-	    color: rgba(255,255,255,0.65);
-	    font-size: 14px;
-	    font-family: PUAExt, plgo1, plgo2, Source, ffallback;
-	    line-height: 1;
-	}
-</style>
+<link rel="stylesheet" href="../src/css/mainStyles.css">
+<link rel="stylesheet" href="../src/css/materialInput.css">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./switch.css">
 <script>
 	var time;
 	var popup;
@@ -105,166 +44,9 @@
 			}
 		time += 0.05;
 	}
-	fuction 
 </script>
 </head>
 <body>
-
-<!-- 定制修改区起始 -->
-<style>
-@media screen and (min-width: 1450px) { 
-	#main { width: 1450px; margin: 10px auto }
-}
-
-a { text-decoration:none }
-a:link, a:visited {color:rgb(242, 242, 242) }
-a:hover, button:hover, span.btn:hover {color:#c20c24 }
-
-@font-face{
-    font-family: PUAExt;
-	src: url(fonts/PUAExt-Regular.woff2);
-}
-
-@font-face{
-    font-family: plgo1;
-	src: url(../fonts/Plgo1.woff2);
-}
-
-@font-face{
-    font-family: plgo2;
-	src: url(../fonts/Plgo2.woff2);
-}
-
-@font-face{
-    font-family: Source;
-	src: url(../fonts/NotoSansSC.woff2);
-}
-
-@font-face{
-    font-family: dela;
-	src: url(fonts/dela.woff2);
-}
-
-#result #output a, .han { font-family: PUAExt, plgo1, plgo2, Source, ffallback; }
-
-#popview .func:hover  { border-radius: 7px }
-#result #output a.img { background-size: 0.95em 0.95em !important; background-position: center center }
-#popview #bigchar.img  { background-size: 0.95em 0.95em !important }
-#result #groups a.img { background-repeat: no-repeat; background-size: 83% !important; background-position: top 0.1em center !important }
-#sk_header { margin-bottom: 10px }
-#sk_header #sk_logo { float: left; width: 200px; text-align: center; cursor: default }
-#sk_header #sk_logo h1 { margin: -10px 0; font-size: 2.4em; font-weight: normal }
-#sk_header #sk_logo h3 { margin: 5px 0 0 0; font-weight: bold; font-size: 1em; font-family: Arial, Helvetica, sans-serif }
-#sk_header #sk_logo #datasize { color: #a13887 }
-/*#sk_header #sk_toolbar .grp { display: inline-block; white-space: nowrap; margin: 3px } */
-#sk_header button { cursor: pointer; font-size: 2.5em; line-height: 1; padding: 2px; min-width: 30px; height: 50px; box-sizing: content-box; vertical-align: top; }
-#sk_header #input { font-size: 2.5em; padding: 2px; height: 50px; vertical-align: top }
-
-#funcs { padding: 10px 10px 0 10px; border-top: 2px solid #ccc; clear: both; }
-#funcs label { margin-right: 10px;}
-#funcs label, #funcs #scKey { white-space: nowrap; }
-#scKey button { color: #00f; font-weight: normal; padding: 0 2px; margin-right: 1px; font-size: 12pt; line-height: 1; width: 1.5em; height: 1.5em; }
-#scKey button.img { background-repeat: no-repeat; background-size: 18px 18px; background-position: center; }
-
-#keyboard { padding: 5px 10px 10px 10px; border-bottom: 2px solid #ccc; clear: both; }
-#keyboard #padbtn { font-size: 1.5em; background: #ccc; cursor: pointer; padding: 2px }
-#keyboard table { width: 100%; border-collapse: collapse;}
-#keyboard table th, #keyboard table td { margin: 1px 0px; padding: 2px 4px; border-top: 1px solid #fff; border-right: 1px solid #fff }
-#keyboard table th { background-color: #ccc; font-weight: normal; white-space: nowrap; }
-#keyboard table.strokeKB th { width: 4em }
-#keyboard table td { background-color: #eee; vertical-align: top }
-#keyboard table td .sub { white-space: nowrap;}
-#keyboard table td .sub .tag { font-size: 85%; vertical-align: middle; margin-left: 5px }
-#keyboard button { width: 17pt; height: 17pt; font-size: 12pt; color: #00f; background: #ddd; border-width: 1px; border-color: #fff #777 #777 #fff ; padding: 1px 2px; margin: 0; cursor: pointer; vertical-align: bottom; }
-#keyboard button:hover { background: #ffc }
-
-#result { padding: 10px 20px }
-#result { padding: 10px 12px }
-#result #legend { line-height:180%; vertical-align: bottom; padding-bottom: 10px }
-/*#result #legend .sizebtn { display: inline-block; width: 24px; height: 24px; line-height: 1; font-size: 25px; text-align: center; background: #ccc; cursor: pointer; vertical-align: bottom; }*/
-#result #legend .zone { display: inline-block; white-space: nowrap; margin-right: 6px }
-#result #legend button { width: 24px; height: 24px; padding: 2px; border: 1px solid #bbb; cursor: pointer; color: transparent; margin-right: 4px; vertical-align: top; line-height: 1 }
-#result #legend #counter { font-weight: bold; color: #00f; white-space: nowrap }
-#result #legend #counter:after { content: '　'}
-
-#result #groups { display: none; min-height: 55px; font-size:1.6em; line-height: 1; padding: 5px 10px; background-color: #f4f4f4; border-top: 1px dashed #aaa }
-#result #groups a { border: 1px solid #aaa; color: #333 !important; border-radius: 3px; background-color: #fff; padding: 1px; margin: 2px; width: 1em; display: inline-block; overflow: hidden }
-#result #groups a.img { background-repeat: no-repeat; background-size: 27px 27px; background-position: top center }
-#result #groups a:after { content: attr(data-count); display: block; text-align: center; font: 50%/1.4 Arial, Helvetica, sans-serif; }
-#result #groups a.on { background-color: #eaa }
-
-#result #output { min-height: 100px; font-size:2.5em; line-height: 1; padding: 10px 0; clear: both; border-top: 1px dashed #aaa }
-#result #output a { border: 1px solid #aaa; padding: 1px; margin: 2px; width: 1em; display: inline-block; border-radius: 8px; overflow: hidden; border-color: #00000017; box-shadow: 0px 0px 6px #00000047; }
-#result #output a.img { background-repeat: no-repeat; background-size: 1em 1em; color: transparent !important }
-#result #output > span { margin: 3px 0; padding: 4px 8px; display: block; }
-#result #output > span .line { display: inline-block; margin-bottom: 2px; padding-bottom: 1px; }
-#result #output > span .line.hover { border-bottom: 2px solid #e08 !important; color: #e08 }
-/*#result #output > span .line:hover .line { border-bottom: transparent !important }*/
-#result #output > span .sub { font-size: 95% }
-#result #output > span .line { border-bottom: 2px solid #666 }
-#result #output > span .line .line { border-bottom: 2px solid #888 }
-#result #output > span .line .line .line { border-bottom: 2px solid #aaa }
-#result #output > span .line .line .line .line { border-bottom: 2px solid #ccc }
-#result #output > span .line .line .line .line .line { border-bottom: 2px solid #ddd }
-#result #output h3 { margin: 0 10px 0 0; padding: 0; display: inline-block; width: 1em; font-size: 1em; line-height: 1.2; vertical-align: top; user-select: none; }
-#result #output h3.img { background-repeat: no-repeat; background-size: 27px 27px; color: transparent !important }
-
-#sk_foot { clear: both; font-size: 0.85em; text-align: right; padding-top: 20px; height: 100px }
-#sk_foot > span { padding: 3px 10px; white-space: nowrap }
-
-.K1 { color: #0000aa !important }
-.K2 { color: #004d26 !important }
-.K3 { color: #752796 !important }
-.K4 { color: #ac3333 !important }
-body {background:#FFFBFE;}
-a[class="BSC"]{background:#eee;color:#000;}
-.BSC {background:#eee;color:#000;}
-.ExA {background:#00d2d2;}
-.ExB {background:#0099ff;}
-.ExC {background:#0000ff;}
-.ExD {background:#3333cc;}
-.ExE {background:#6000ef;}
-.ExF {background:#9900ff;}
-.ExG {background:#cc00ff;}
-.ExH {background:#ff33cc;}
-.ExI {background:#ff327d;}
-.CMP {background:#ff3c00;}
-.SUP {background:#ff0000;}
-.OTH {background:#aaa;}
-/*.decmp { color:#0045FF !important }
-.fuzzy { color:#404040 !important }*/
-.exact { outline: 1px solid #c43400; border-color: #c43400 !important }
-
-#result #legend button { border-radius: 8px }
-#sk_header #input { border-radius: 8px; border: 1px solid #666; }
-#sk_header button { border: 1px solid #666; border-radius: 8px }
-#scKey button { border: 1px solid #666; border-radius: 8px }
-#popview { position: absolute; display: none; width: 100px; min-height: 125px; padding-left: 100px; border: 1px solid #666; border-radius: 8px; background: rgba(255, 255, 255, 0.9); box-shadow: 2px 2px #aaa; z-index: 10 }
-#popview #bigchar { position: absolute; display: block; left: 0; top: 0; width: 100px; height: 100px; font-size: 80px; text-align: center; line-height: 100px; cursor: default }
-#popview #bigchar.img { color: transparent; background-repeat: no-repeat; background-size: 90px 90px; background-position: center; }
-#popview #codetag { position: absolute; display: block; left: 0; top: 100px; width: 100px; font-size: 15px; color: #074a67; text-align: center; font-family:Arial, Helvetica, sans-serif; cursor: default }
-#popview .func { display: block; cursor: pointer; padding: 2px 5px; color: #333 }
-#popview .func:hover { background :#ff5b84; color: #fff }
-
-
-@media screen and (max-width: 800px) { 
-	.els { display: none }
-	#sk_header { text-align: center }
-	#sk_header #sk_logo { float: none; clear: both; display: block; width: 100%; margin-bottom: 5px }
-	#sk_header #sk_logo h1 { font-size: 2em }
-	#sk_header #sk_logo h1, #sk_header #sk_logo h3 { margin: 0; display: inline-block }
-	#sk_header #input { width: 220px; font-size: 1.8em; height: 35px }
-	#sk_header button { font-size: 1.8em; height: 35px }
-
-	#keyboard table th { width: 2.2em }
-	#keyboard table td .sub { white-space: normal ;} 
-	#result #legend .zone { width: 28px; overflow: hidden; margin-right: 2px; color: #000 } 
-	#result #legend button { color: #000 }
-
-	#sk_foot > span { display: block; }
-}
-h1, #sk_header button { font-family: dela; }
-</style>
 
 <div id="main">
 
@@ -285,10 +67,12 @@ h1, #sk_header button { font-family: dela; }
 
 <div id="funcs">
 	<span>・遍黑体扩展B区尚有许多字未完成，将会显示成宋体。</span>
-	<label><input type="checkbox" id="variant" onclick="UI.setMode(this, 'variant')">包含异体</label>
-	<label><input type="checkbox" id="subdivide" onclick="UI.setMode(this, 'subdivide')">强行拆分</label>
-	<label><input type="checkbox" id="showkeypad">部件键盘</label>
+	<div>
+	<div>包含异体<label class="md-switch"><input type="checkbox" id="variant" onclick="UI.setMode(this, 'variant')"><span class="track"><span class="thumb"></span></span></label></div>
+	<div>强行拆分<label class="md-switch"><input type="checkbox" id="subdivide" onclick="UI.setMode(this, 'subdivide')"><span class="track"><span class="thumb"></span></span></label></div>
+	<div>部件键盘<label class="md-switch"><input type="checkbox" id="showkeypad"><span class="track"><span class="thumb"></span></span></label></div>
 	<span id="scKey" class="grp">快捷栏：</span>
+	</div>
 </div>
 
 <div id="keyboard">
