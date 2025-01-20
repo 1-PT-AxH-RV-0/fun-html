@@ -1,90 +1,129 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>字符显示器</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>字符显示器</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/fontFallback.css">
-  <link rel="stylesheet" href="../css/materialInput.css">
-  <link rel="stylesheet" href="../css/counter.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/switch.css">
-  <link rel="stylesheet" href="../css/select.css">
-  <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css">
-  <link rel="stylesheet" href="../css/tools/charDisplay.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/autoHeight.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/materialInput.js"></script>
-  <script defer src="../js/counter.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/select.js"></script>
-  <script src="../js/dialogs.js"></script>
-  <script defer src="../js/tools/charDisplay.js"></script>
-</head>
-<body>
-  <div>
-    <main>
-      <div>
-        <div class="material-input-container counter-container">
-          <textarea rows="1" id="text" class="font auto-height"></textarea>
-          <label for="text">文本</label>
-          <span class="counter"></span>
-        </div>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/fontFallback.css" />
+    <link rel="stylesheet" href="../css/materialInput.css" />
+    <link rel="stylesheet" href="../css/counter.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/switch.css" />
+    <link rel="stylesheet" href="../css/select.css" />
+    <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css" />
+    <link rel="stylesheet" href="../css/tools/charDisplay.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/autoHeight.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/materialInput.js"></script>
+    <script defer src="../js/counter.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/select.js"></script>
+    <script src="../js/dialogs.js"></script>
+    <script defer src="../js/tools/charDisplay.js"></script>
+  </head>
+  <body>
+    <div>
+      <main>
+        <div>
+          <div class="material-input-container counter-container">
+            <textarea rows="1" id="text" class="font auto-height"></textarea>
+            <label for="text">文本</label>
+            <span class="counter"></span>
+          </div>
 
-        <div class="flex-end">
-          <button id="clear" class="shadow-button">
-            <span class="material-icons">清空</span>
+          <div class="flex-end">
+            <button id="clear" class="shadow-button">
+              <span class="material-icons">清空</span>
+            </button>
+          </div>
+
+          <div class="options-container" id="other-options">
+            其他设置： 粗体
+            <label class="md-switch">
+              <input type="checkbox" id="bold" />
+              <span class="track"><span class="thumb"></span></span>
+            </label>
+            斜体
+            <label class="md-switch">
+              <input type="checkbox" id="italic" />
+              <span class="track"><span class="thumb"></span></span>
+            </label>
+          </div>
+
+          <button id="add-font-feature-settings-button">
+            添加字体特征设置
           </button>
-        </div>
-
-        <div class="options-container" id="other-options">
-          其他设置：
-          粗体<label class="md-switch"><input type="checkbox" id="bold"><span class="track"><span class="thumb"></span></span></label>
-          斜体<label class="md-switch"><input type="checkbox" id="italic"><span class="track"><span class="thumb"></span></span></label>
-        </div>
-
-        <button id="add-font-feature-settings-button">添加字体特征设置</button>
-        <dialog id="add-font-feature-settings-dialog">
-          <div class="material-input-container">
-            <input type="text" id="name">
-            <label for="name">字体特征设置名称</label>
-          </div>
-          <div id="act-opts">
-            <div id="availability">
-              启用<label class="md-switch" id="availability-switch"><input type="checkbox" id="availability-input"><span class="track"><span class="thumb"></span></span></label>
+          <dialog id="add-font-feature-settings-dialog">
+            <div class="material-input-container">
+              <input type="text" id="name" />
+              <label for="name">字体特征设置名称</label>
             </div>
-            <button id="close" class="no-ripple">关闭</button>
-            <button id="submit" class="no-ripple">提交</button>
-          </div>
-          <dialog id="error">
-            <div id="error-text"></div>
-            <button id="error-close" class="no-ripple">关闭</button>
+            <div id="act-opts">
+              <div id="availability">
+                启用
+                <label class="md-switch" id="availability-switch">
+                  <input type="checkbox" id="availability-input" />
+                  <span class="track"><span class="thumb"></span></span>
+                </label>
+              </div>
+              <button id="close" class="no-ripple">关闭</button>
+              <button id="submit" class="no-ripple">提交</button>
+            </div>
+            <dialog id="error">
+              <div id="error-text"></div>
+              <button id="error-close" class="no-ripple">关闭</button>
+            </dialog>
           </dialog>
-        </dialog>
-        <div id="added-font-feature-settings-container"></div>
+          <div id="added-font-feature-settings-container"></div>
 
-        <div id="file-upload-container">
-          <input type="file" id="font-upload" accept="font/**,.eot" />
-          <button id="upload-button">上传字体文件</button>
+          <div id="file-upload-container">
+            <input type="file" id="font-upload" accept="font/**,.eot" />
+            <button id="upload-button">上传字体文件</button>
+          </div>
+          <div id="sortable-list-container"></div>
         </div>
-        <div id="sortable-list-container"></div>
-      </div>
 
-      <div>
-        <h2>使用方法</h2>
-        <p>您只需将字符粘贴或输入到文本区域即可。</p>
-        
-        <h2>注意事项</h2>
-        <ul>
-          <li style="word-break: break-all;">关于全部的字体特征设置，请参见 <a href="">https://learn.microsoft.com/zh-cn/typography/opentype/spec/featurelist</a>。</li>
-          <li style="word-break: break-all;">字体特征设置仅对 otf 字体生效，若要查看某个 otf 字体支持的字体特征设置，请使用 <a href="">https://wakamaifondue.com</a>，选择文件后查看 Layout features。</li>
-          <li>如果字符未编码，它将显示为方<ruby>框<rp>（</rp><rt>kuàng</rt><rp>）</rp></ruby>围着的字符。</li>
-          <li>从第 4 平面到第 13 平面的字符都未编码，因此此软件会显示这些字符所在的平面。</li>
-        </ul>
-      </div>
-    </main>
-  </div>
-</body>
+        <div>
+          <h2>使用方法</h2>
+          <p>您只需将字符粘贴或输入到文本区域即可。</p>
+
+          <h2>注意事项</h2>
+          <ul>
+            <li style="word-break: break-all">
+              关于全部的字体特征设置，请参见
+              <a href="">
+                https://learn.microsoft.com/zh-cn/typography/opentype/spec/featurelist
+              </a>
+              。
+            </li>
+            <li style="word-break: break-all">
+              字体特征设置仅对 otf 字体生效，若要查看某个 otf
+              字体支持的字体特征设置，请使用
+              <a href="">https://wakamaifondue.com</a>
+              ，选择文件后查看 Layout features。
+            </li>
+            <li>
+              如果字符未编码，它将显示为方
+              <ruby>
+                框
+                <rp>（</rp>
+                <rt>kuàng</rt>
+                <rp>）</rp>
+              </ruby>
+              围着的字符。
+            </li>
+            <li>
+              从第 4 平面到第 13
+              平面的字符都未编码，因此此软件会显示这些字符所在的平面。
+            </li>
+          </ul>
+        </div>
+      </main>
+    </div>
+  </body>
 </html>

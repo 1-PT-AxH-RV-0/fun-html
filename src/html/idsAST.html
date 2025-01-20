@@ -1,71 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-hans">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IDS 抽象语法树</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IDS 抽象语法树</title>
 
-  <link id="highlight-js-style" rel="stylesheet" href="../highlight.js/default.min.css">
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/fontFallback.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/materialInput.css">
-  <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css">
-  <link rel="stylesheet" href="../css/tools/idsAST.css">
-  <script defer src="../highlight.js/highlight.min.js"></script>
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/materialInput.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/tools/idsAST.js"></script>
-</head>
-<body>
-<div>
-  <main>
+    <link
+      id="highlight-js-style"
+      rel="stylesheet"
+      href="../highlight.js/default.min.css" />
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/fontFallback.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/materialInput.css" />
+    <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css" />
+    <link rel="stylesheet" href="../css/tools/idsAST.css" />
+    <script defer src="../highlight.js/highlight.min.js"></script>
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/materialInput.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/tools/idsAST.js"></script>
+  </head>
+  <body>
     <div>
-      <div id="inputer-container" class="font-idc inner-div">
-        <button class="no-ripple idc-inputer">⿰</button>
-        <button class="no-ripple idc-inputer">⿱</button>
-        <button class="no-ripple idc-inputer">⿲</button>
-        <button class="no-ripple idc-inputer">⿳</button>
-        <button class="no-ripple idc-inputer">⿴</button>
-        <button class="no-ripple idc-inputer">⿵</button>
-        <button class="no-ripple idc-inputer">⿶</button>
-        <button class="no-ripple idc-inputer">⿷</button>
-        <button class="no-ripple idc-inputer">⿼</button>
-        <button class="no-ripple idc-inputer">⿸</button>
-        <button class="no-ripple idc-inputer">⿹</button>
-        <button class="no-ripple idc-inputer">⿺</button>
-        <button class="no-ripple idc-inputer">⿽</button>
-        <button class="no-ripple idc-inputer">⿻</button>
-        <button class="no-ripple idc-inputer">⿾</button>
-        <button class="no-ripple idc-inputer">⿿</button>
-        <button class="no-ripple idc-inputer">㇯</button>
-        <span></span>
-        <button class="no-ripple curve-inputer">◜</button>
-        <button class="no-ripple curve-inputer">◝</button>
-        <button class="no-ripple curve-inputer">◞</button>
-        <button class="no-ripple curve-inputer">◟</button>
-        <span></span>
-        <button class="no-ripple idc-inputer">🔄</button>
-      </div>
-      <div class="material-input-container">
-        <input type="text" id="input" class="font-idc" style="line-height: 1.2rem;">
-        <label for="input">IDS</label>
-      </div>
-      <div class="flex-end">
-        <button id="parse" class="shadow-button">解析</button>
-      </div>
-    </div>
-    <div id="res-container">
-      <div id="error" class="error-container font-idc"></div>
-      <div id="ids-svg-container"></div>
-      <pre class="code-container">
+      <main>
+        <div>
+          <div id="inputer-container" class="font-idc inner-div">
+            <button class="no-ripple idc-inputer">⿰</button>
+            <button class="no-ripple idc-inputer">⿱</button>
+            <button class="no-ripple idc-inputer">⿲</button>
+            <button class="no-ripple idc-inputer">⿳</button>
+            <button class="no-ripple idc-inputer">⿴</button>
+            <button class="no-ripple idc-inputer">⿵</button>
+            <button class="no-ripple idc-inputer">⿶</button>
+            <button class="no-ripple idc-inputer">⿷</button>
+            <button class="no-ripple idc-inputer">⿼</button>
+            <button class="no-ripple idc-inputer">⿸</button>
+            <button class="no-ripple idc-inputer">⿹</button>
+            <button class="no-ripple idc-inputer">⿺</button>
+            <button class="no-ripple idc-inputer">⿽</button>
+            <button class="no-ripple idc-inputer">⿻</button>
+            <button class="no-ripple idc-inputer">⿾</button>
+            <button class="no-ripple idc-inputer">⿿</button>
+            <button class="no-ripple idc-inputer">㇯</button>
+            <span></span>
+            <button class="no-ripple curve-inputer">◜</button>
+            <button class="no-ripple curve-inputer">◝</button>
+            <button class="no-ripple curve-inputer">◞</button>
+            <button class="no-ripple curve-inputer">◟</button>
+            <span></span>
+            <button class="no-ripple idc-inputer">🔄</button>
+          </div>
+          <div class="material-input-container">
+            <input
+              type="text"
+              id="input"
+              class="font-idc"
+              style="line-height: 1.2rem" />
+            <label for="input">IDS</label>
+          </div>
+          <div class="flex-end">
+            <button id="parse" class="shadow-button">解析</button>
+          </div>
+        </div>
+        <div id="res-container">
+          <div id="error" class="error-container font-idc"></div>
+          <div id="ids-svg-container"></div>
+          <pre class="code-container">
         <button class="copy-button nf nf-fa-copy" id="copy-button"></button>
         <code class="font-idc" id="json-code"></code>
       </pre>
+        </div>
+      </main>
     </div>
-  </main>
-</div>
-</body>
+  </body>
 </html>

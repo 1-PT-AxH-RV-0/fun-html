@@ -1,30 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>“骨”钟</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>“骨”钟</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/refuse.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/tools/GuClock.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/tools/GuClock.js"></script>
-</head>
-<body>
-  <div>
-    <svg id="frame" viewBox="0 0 700 800"><path id="framePath" d="M147 763V421h406l1 148c0 155 0 159-4 170-6 13-22 20-48 23-22 3-86 2-86 2l-10-33-5-10h43c46 0 52 0 56-5 3-5 2-48 2-63H196l-1 111zm356-206H197l-1 53 307 1Zm0-92H197l-1 51 307 1Zm-447 1V332l97-1 1-331h392l1 331 97 1v134h-50v-88H104v88zM494 43H205l-1 288h290Z"></path></svg>
-    <svg class="hand" id="hour"><path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path></svg>
-    <svg class="hand" id="min"><path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path></svg>
-    <svg class="hand" id="sec"><path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path></svg>
-  </div>
-  <div>
-    <button onclick="timeEle.click()">修改时间</button>
-    <button id="set-as-current-time">设为当前时间</button>
-    <button id="togglePathButton">更换样式</button>
-    <input type="time" id="time" step="1">
-  </div>
-</body>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/refuse.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/tools/GuClock.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/tools/GuClock.js"></script>
+  </head>
+  <body>
+    <div>
+      <svg id="frame" viewBox="0 0 700 800">
+        <path
+          id="framePath"
+          d="M147 763V421h406l1 148c0 155 0 159-4 170-6 13-22 20-48 23-22 3-86 2-86 2l-10-33-5-10h43c46 0 52 0 56-5 3-5 2-48 2-63H196l-1 111zm356-206H197l-1 53 307 1Zm0-92H197l-1 51 307 1Zm-447 1V332l97-1 1-331h392l1 331 97 1v134h-50v-88H104v88zM494 43H205l-1 288h290Z"></path>
+      </svg>
+      <svg class="hand" id="hour">
+        <path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path>
+      </svg>
+      <svg class="hand" id="min">
+        <path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path>
+      </svg>
+      <svg class="hand" id="sec">
+        <path class="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path>
+      </svg>
+    </div>
+    <div>
+      <button onclick="timeEle.click()">修改时间</button>
+      <button id="set-as-current-time">设为当前时间</button>
+      <button id="togglePathButton">更换样式</button>
+      <input type="time" id="time" step="1" />
+    </div>
+  </body>
 </html>

@@ -1,63 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hans">
-<head>
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-  <title>生命游戏</title>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>生命游戏</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css">
-  <link rel="stylesheet" href="../css/tools/lifeGame.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script src="../js/dialogs.js"></script>
-  <script defer src="../js/tools/lifeGame.js"></script>
-</head>
-<body>
-  <div>
-    <main>
-      <div id="containerDiv"><span id="container"></span></div>
-      <div class="more-gap">
-        <div class="inner-div">
-          <button id="prev" class="nf nf-fa-step_backward">&emsp;上一代</button>
-          <button id="next" class="nf nf-fa-step_forward">&emsp;下一代</button>
-          <button id="start" class="nf nf-fa-play">&emsp;开始</button>
-          <button id="pause" class="nf nf-fa-pause">&emsp;暂停</button>
-          <button id="save" class="nf nf-md-content_save">&emsp;保存为一代</button>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css" />
+    <link rel="stylesheet" href="../css/tools/lifeGame.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script src="../js/dialogs.js"></script>
+    <script defer src="../js/tools/lifeGame.js"></script>
+  </head>
+  <body>
+    <div>
+      <main>
+        <div id="containerDiv"><span id="container"></span></div>
+        <div class="more-gap">
+          <div class="inner-div">
+            <button id="prev" class="nf nf-fa-step_backward">
+              &emsp;上一代
+            </button>
+            <button id="next" class="nf nf-fa-step_forward">
+              &emsp;下一代
+            </button>
+            <button id="start" class="nf nf-fa-play">&emsp;开始</button>
+            <button id="pause" class="nf nf-fa-pause">&emsp;暂停</button>
+            <button id="save" class="nf nf-md-content_save">
+              &emsp;保存为一代
+            </button>
+          </div>
+          <div class="inner-div">
+            <div id="generationsCountShow">当前代：0/0</div>
+            <input
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              style="width: 50%"
+              id="generations" />
+            <button id="jump" class="nf nf-md-arrow_collapse_down">
+              &emsp;跳转代
+            </button>
+            <button id="clear-generations" class="nf nf-md-delete_forever">
+              &emsp;清空代
+            </button>
+          </div>
+          <div class="inner-div">
+            <button id="reset" class="nf nf-fa-arrow_rotate_right">
+              &emsp;重置
+            </button>
+            <button id="set-rule" class="nf nf-seti-config">
+              &emsp;设置规则
+            </button>
+            <span id="rule" class="nf nf-md-format_list_numbered"></span>
+          </div>
+          <input id="import" type="file" style="display: none" />
+          <div class="inner-div">
+            <button id="export" class="nf nf-fa-file_export">
+              &emsp;导出当前代
+            </button>
+            <button onclick="importInp.click()" class="nf nf-fa-file_import">
+              &emsp;导入
+            </button>
+          </div>
+          <div class="inner-div">
+            <button id="state" class="nf nf-md-format_paint">
+              &emsp;设置填充状态
+            </button>
+            <span id="stateShow"></span>
+          </div>
+          <div class="inner-div">
+            <button id="gridSize" class="nf nf-md-arrow_expand_all">
+              &emsp;设置网格大小
+            </button>
+            <span id="gridSizeShow"></span>
+          </div>
+          <div class="inner-div">
+            <button id="gap" class="nf nf-md-clock_edit_outline">
+              &emsp;设置迭代间隔
+            </button>
+            <span id="gapShow"></span>
+          </div>
         </div>
-        <div class="inner-div">
-           <div id="generationsCountShow">当前代：0/0</div>
-           <input type="range" min="0" max="0" value="0" style="width: 50%;" id="generations">
-           <button id="jump" class="nf nf-md-arrow_collapse_down">&emsp;跳转代</button>
-           <button id="clear-generations" class="nf nf-md-delete_forever">&emsp;清空代</button>
-        </div>
-        <div class="inner-div">
-          <button id="reset" class="nf nf-fa-arrow_rotate_right">&emsp;重置</button>
-          <button id="set-rule" class="nf nf-seti-config">&emsp;设置规则</button>
-          <span id="rule" class="nf nf-md-format_list_numbered"></span>
-        </div>
-        <input id="import" type="file" style="display: none;">
-        <div class="inner-div">
-          <button id="export" class="nf nf-fa-file_export">&emsp;导出当前代</button>
-          <button onclick="importInp.click()" class="nf nf-fa-file_import">&emsp;导入</button>
-        </div>
-        <div class="inner-div">
-          <button id="state" class="nf nf-md-format_paint">&emsp;设置填充状态</button>
-          <span id="stateShow"></span>
-        </div>
-        <div class="inner-div">
-          <button id="gridSize" class="nf nf-md-arrow_expand_all">&emsp;设置网格大小</button>
-          <span id="gridSizeShow"></span>
-        </div>
-        <div class="inner-div">
-          <button id="gap" class="nf nf-md-clock_edit_outline">&emsp;设置迭代间隔</button>
-          <span id="gapShow"></span>
-        </div>
-      </div>
-    </main>
-  </div>
-</body>
+      </main>
+    </div>
+  </body>
 </html>

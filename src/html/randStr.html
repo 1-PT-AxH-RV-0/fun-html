@@ -1,440 +1,791 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" content="user-scalable=yes, width=device-width, initial-scale=1.0, maximum-scale=10.0">
-  <title>随机字符生成器</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      content="user-scalable=yes, width=device-width, initial-scale=1.0, maximum-scale=10.0" />
+    <title>随机字符生成器</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/fontFallback.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/materialInput.css">
-  <link rel="stylesheet" href="../css/counter.css">
-  <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css">
-  <link rel="stylesheet" href="../css/select.css">
-  <link rel="stylesheet" href="../css/tools/randStr.css">
-  <script defer src="../../assets/DefinedCharacterList.js"></script>
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/autoHeight.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/materialInput.js"></script>
-  <script defer src="../js/counter.js"></script>
-  <script defer src="../js/select.js"></script>
-  <script defer src="../js/tools/randStr.js"></script>
-</head>
-<body>
-  <div>
-    <main>
-      <div>
-        <div id="count-section">
-          <div class="material-input-container">
-            <input type="number" id="count-input" value="100">
-            <label for="count-input">数量</label>
-          </div>
-          <input type="range" id="count-slider" min="1" max="1000" value="100">
-        </div>
-        <div id="checkbox-section">
-          <label><input type="checkbox" id="include-digits">包含数字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-lowercase">包含小写字母<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-uppercase">包含大写字母<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-special-symbols">包含特殊符号<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-basic-chinese">包含基本区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-a-chinese">包含扩展 A 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-b-chinese">包含扩展 B 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-c-chinese">包含扩展 C 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-d-chinese">包含扩展 D 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-e-chinese">包含扩展 E 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-f-chinese">包含扩展 F 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-g-chinese">包含扩展 G 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-h-chinese">包含扩展 H 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-extended-i-chinese">包含扩展 I 区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-compatible-chinese">包含兼容区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-compatible-supplement-chinese">包含兼容补充区汉字<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="include-custom-char">包含自定义字符<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <div class="material-input-container">
-            <input type="text" id="custom-char">
-            <label for="custom-char" class="placeholder">自定义字符<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          </div>
-          <div id="custom-interval-section" class="options-container">
-            <label><input type="checkbox" id="include-custom-interval">包含自定义区间<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-            <button id="add-custom-interval" class="add-button nf nf-cod-add"></button>
-            <div id="custom-interval-container"></div>
-          </div>
-          <div id="unicode-block-section">
-            <label><input type="checkbox" id="include-custom-unicode-blocks">包含自定义 Unicode 区段<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-            <div class="select-container multi" id="select-blocks">
-              <div class="select">
-                <div class="select-content">
-                  <span class="cur-select" data-default-text="选择区段">选择区段</span>
-                  <span class="nf nf-fa-angle_down"></span>
-                </div>
-                <input type="text" class="filter" placeholder="筛选">
-              </div>
-              <!-- ((?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4})\.\.((?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4})\|(?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4}\|(.+?)\|.* -->
-              <!--                 <div data-select="$1,$2" class="opt">$3</div> -->
-              <div class="opts-list">
-                <div data-select="0000,007F" class="opt">基本拉丁</div>
-                <div data-select="0080,00FF" class="opt">拉丁一补充</div>
-                <div data-select="0100,017F" class="opt">拉丁扩充甲</div>
-                <div data-select="0180,024F" class="opt">拉丁扩充乙</div>
-                <div data-select="0250,02AF" class="opt">国际音标扩充</div>
-                <div data-select="02B0,02FF" class="opt">有距修饰字</div>
-                <div data-select="0300,036F" class="opt">结合变音标记</div>
-                <div data-select="0370,03FF" class="opt">希腊及科普特</div>
-                <div data-select="0400,04FF" class="opt">西里尔</div>
-                <div data-select="0500,052F" class="opt">西里尔补充</div>
-                <div data-select="0530,058F" class="opt">亚美尼亚</div>
-                <div data-select="0590,05FF" class="opt">希伯来</div>
-                <div data-select="0600,06FF" class="opt">阿拉伯</div>
-                <div data-select="0700,074F" class="opt">叙利亚</div>
-                <div data-select="0750,077F" class="opt">阿拉伯补充</div>
-                <div data-select="0780,07BF" class="opt">塔纳</div>
-                <div data-select="07C0,07FF" class="opt">恩科(西非书面)</div>
-                <div data-select="0800,083F" class="opt">撒马利亚</div>
-                <div data-select="0840,085F" class="opt">曼德恩</div>
-                <div data-select="0860,086F" class="opt">叙利亚补充</div>
-                <div data-select="0870,089F" class="opt">阿拉伯扩充乙</div>
-                <div data-select="08A0,08FF" class="opt">阿拉伯扩充甲</div>
-                <div data-select="0900,097F" class="opt">天城体</div>
-                <div data-select="0980,09FF" class="opt">孟加拉</div>
-                <div data-select="0A00,0A7F" class="opt">果鲁穆奇</div>
-                <div data-select="0A80,0AFF" class="opt">古吉拉特</div>
-                <div data-select="0B00,0B7F" class="opt">奥里亚</div>
-                <div data-select="0B80,0BFF" class="opt">泰米尔</div>
-                <div data-select="0C00,0C7F" class="opt">泰卢固</div>
-                <div data-select="0C80,0CFF" class="opt">卡纳达</div>
-                <div data-select="0D00,0D7F" class="opt">马拉雅拉姆</div>
-                <div data-select="0D80,0DFF" class="opt">僧伽罗</div>
-                <div data-select="0E00,0E7F" class="opt">泰文</div>
-                <div data-select="0E80,0EFF" class="opt">老挝</div>
-                <div data-select="0F00,0FFF" class="opt">藏文</div>
-                <div data-select="1000,109F" class="opt">缅文</div>
-                <div data-select="10A0,10FF" class="opt">格鲁吉亚</div>
-                <div data-select="1100,11FF" class="opt">谚文字母</div>
-                <div data-select="1200,137F" class="opt">埃塞</div>
-                <div data-select="1380,139F" class="opt">埃塞补充</div>
-                <div data-select="13A0,13FF" class="opt">切罗基</div>
-                <div data-select="1400,167F" class="opt">统一加拿大土著音节</div>
-                <div data-select="1680,169F" class="opt">欧甘</div>
-                <div data-select="16A0,16FF" class="opt">卢恩</div>
-                <div data-select="1700,171F" class="opt">他加禄</div>
-                <div data-select="1720,173F" class="opt">哈努努奥</div>
-                <div data-select="1740,175F" class="opt">布希德</div>
-                <div data-select="1760,177F" class="opt">蒂亚格班瓦</div>
-                <div data-select="1780,17FF" class="opt">高棉</div>
-                <div data-select="1800,18AF" class="opt">蒙文</div>
-                <div data-select="18B0,18FF" class="opt">统一加拿大土著音节扩充</div>
-                <div data-select="1900,194F" class="opt">林布</div>
-                <div data-select="1950,197F" class="opt">傣㐻</div>
-                <div data-select="1980,19DF" class="opt">新傣仂</div>
-                <div data-select="19E0,19FF" class="opt">高棉符号</div>
-                <div data-select="1A00,1A1F" class="opt">布吉</div>
-                <div data-select="1A20,1AAF" class="opt">傣昙</div>
-                <div data-select="1AB0,1AFF" class="opt">结合变音标记扩充</div>
-                <div data-select="1B00,1B7F" class="opt">巴厘</div>
-                <div data-select="1B80,1BBF" class="opt">巽他</div>
-                <div data-select="1BC0,1BFF" class="opt">巴塔克</div>
-                <div data-select="1C00,1C4F" class="opt">雷布查</div>
-                <div data-select="1C50,1C7F" class="opt">奥尔奇基</div>
-                <div data-select="1C80,1C8F" class="opt">西里尔扩充丙</div>
-                <div data-select="1C90,1CBF" class="opt">格鲁吉亚扩充</div>
-                <div data-select="1CC0,1CCF" class="opt">巽他补充</div>
-                <div data-select="1CD0,1CFF" class="opt">吠陀扩充</div>
-                <div data-select="1D00,1D7F" class="opt">音标扩充</div>
-                <div data-select="1D80,1DBF" class="opt">音标扩充增补</div>
-                <div data-select="1DC0,1DFF" class="opt">结合变音标记补充</div>
-                <div data-select="1E00,1EFF" class="opt">拉丁扩充追加</div>
-                <div data-select="1F00,1FFF" class="opt">希腊扩充</div>
-                <div data-select="2000,206F" class="opt">通用标点</div>
-                <div data-select="2070,209F" class="opt">上标及下标</div>
-                <div data-select="20A0,20CF" class="opt">货币符号</div>
-                <div data-select="20D0,20FF" class="opt">结合变音记号</div>
-                <div data-select="2100,214F" class="opt">类字符号</div>
-                <div data-select="2150,218F" class="opt">数字形式</div>
-                <div data-select="2190,21FF" class="opt">箭头</div>
-                <div data-select="2200,22FF" class="opt">数学运算符</div>
-                <div data-select="2300,23FF" class="opt">各式技术符</div>
-                <div data-select="2400,243F" class="opt">控制图符</div>
-                <div data-select="2440,245F" class="opt">光学字符识别</div>
-                <div data-select="2460,24FF" class="opt">附围字母数字</div>
-                <div data-select="2500,257F" class="opt">制表符</div>
-                <div data-select="2580,259F" class="opt">方块构素</div>
-                <div data-select="25A0,25FF" class="opt">几何形状</div>
-                <div data-select="2600,26FF" class="opt">各式符号</div>
-                <div data-select="2700,27BF" class="opt">什锦</div>
-                <div data-select="27C0,27EF" class="opt">各式数学符号甲</div>
-                <div data-select="27F0,27FF" class="opt">增补箭头甲</div>
-                <div data-select="2800,28FF" class="opt">布莱叶盲文点字</div>
-                <div data-select="2900,297F" class="opt">增补箭头乙</div>
-                <div data-select="2980,29FF" class="opt">各式数学符号乙</div>
-                <div data-select="2A00,2AFF" class="opt">增补数学运算符</div>
-                <div data-select="2B00,2BFF" class="opt">各式符号及箭头</div>
-                <div data-select="2C00,2C5F" class="opt">格拉哥里</div>
-                <div data-select="2C60,2C7F" class="opt">拉丁扩充丙</div>
-                <div data-select="2C80,2CFF" class="opt">科普特</div>
-                <div data-select="2D00,2D2F" class="opt">格鲁吉亚补充</div>
-                <div data-select="2D30,2D7F" class="opt">提非纳</div>
-                <div data-select="2D80,2DDF" class="opt">埃塞扩充</div>
-                <div data-select="2DE0,2DFF" class="opt">西里尔扩充甲</div>
-                <div data-select="2E00,2E7F" class="opt">增补标点</div>
-                <div data-select="2E80,2EFF" class="opt">汉字部首补充</div>
-                <div data-select="2F00,2FDF" class="opt">康熙部首</div>
-                <div data-select="2FF0,2FFF" class="opt">表意描述字符</div>
-                <div data-select="3000,303F" class="opt">中日韩符号及标点</div>
-                <div data-select="3040,309F" class="opt">平假名</div>
-                <div data-select="30A0,30FF" class="opt">片假名</div>
-                <div data-select="3100,312F" class="opt">注音</div>
-                <div data-select="3130,318F" class="opt">谚文兼容字母</div>
-                <div data-select="3190,319F" class="opt">汉文训读</div>
-                <div data-select="31A0,31BF" class="opt">注音扩充</div>
-                <div data-select="31C0,31EF" class="opt">汉字笔画</div>
-                <div data-select="31F0,31FF" class="opt">片假名音标扩充</div>
-                <div data-select="3200,32FF" class="opt">附围中日韩字母及月份</div>
-                <div data-select="3300,33FF" class="opt">中日韩兼容</div>
-                <div data-select="3400,4DBF" class="opt">汉字统一表意扩充甲</div>
-                <div data-select="4DC0,4DFF" class="opt">易经六十四卦</div>
-                <div data-select="4E00,9FFF" class="opt">汉字统一表意</div>
-                <div data-select="A000,A48F" class="opt">彝文音节</div>
-                <div data-select="A490,A4CF" class="opt">彝文部首</div>
-                <div data-select="A4D0,A4FF" class="opt">傈僳(老)</div>
-                <div data-select="A500,A63F" class="opt">瓦伊</div>
-                <div data-select="A640,A69F" class="opt">西里尔扩充乙</div>
-                <div data-select="A6A0,A6FF" class="opt">巴默姆</div>
-                <div data-select="A700,A71F" class="opt">声调修饰字</div>
-                <div data-select="A720,A7FF" class="opt">拉丁扩充丁</div>
-                <div data-select="A800,A82F" class="opt">西洛蒂城体</div>
-                <div data-select="A830,A83F" class="opt">通用印度数字形式</div>
-                <div data-select="A840,A87F" class="opt">八思巴</div>
-                <div data-select="A880,A8DF" class="opt">索拉什特拉</div>
-                <div data-select="A8E0,A8FF" class="opt">天城体扩充</div>
-                <div data-select="A900,A92F" class="opt">克耶利</div>
-                <div data-select="A930,A95F" class="opt">雷姜</div>
-                <div data-select="A960,A97F" class="opt">谚文字母扩充甲</div>
-                <div data-select="A980,A9DF" class="opt">爪哇</div>
-                <div data-select="A9E0,A9FF" class="opt">缅文扩充乙</div>
-                <div data-select="AA00,AA5F" class="opt">占文</div>
-                <div data-select="AA60,AA7F" class="opt">缅文扩充甲</div>
-                <div data-select="AA80,AADF" class="opt">傣越</div>
-                <div data-select="AAE0,AAFF" class="opt">米代文扩充</div>
-                <div data-select="AB00,AB2F" class="opt">埃塞扩充甲</div>
-                <div data-select="AB30,AB6F" class="opt">拉丁扩充戊</div>
-                <div data-select="AB70,ABBF" class="opt">切罗基补充</div>
-                <div data-select="ABC0,ABFF" class="opt">米代文</div>
-                <div data-select="AC00,D7AF" class="opt">谚文音节</div>
-                <div data-select="D7B0,D7FF" class="opt">谚文字母扩充乙</div>
-                <div data-select="D800,DB7F" class="opt">高位替代</div>
-                <div data-select="DB80,DBFF" class="opt">高位私用替代</div>
-                <div data-select="DC00,DFFF" class="opt">低位替代</div>
-                <div data-select="E000,F8FF" class="opt">私用区</div>
-                <div data-select="F900,FAFF" class="opt">汉字兼容表意</div>
-                <div data-select="FB00,FB4F" class="opt">字母表现形式</div>
-                <div data-select="FB50,FDFF" class="opt">阿拉伯表现形式甲</div>
-                <div data-select="FE00,FE0F" class="opt">变体选择符</div>
-                <div data-select="FE10,FE1F" class="opt">竖排形式</div>
-                <div data-select="FE20,FE2F" class="opt">结合半边标记</div>
-                <div data-select="FE30,FE4F" class="opt">中日韩兼容形式</div>
-                <div data-select="FE50,FE6F" class="opt">小型形式变体</div>
-                <div data-select="FE70,FEFF" class="opt">阿拉伯表现形式乙</div>
-                <div data-select="FF00,FFEF" class="opt">半角及全角</div>
-                <div data-select="FFF0,FFFF" class="opt">特殊</div>
-                <div data-select="10000,1007F" class="opt">线形乙音节</div>
-                <div data-select="10080,100FF" class="opt">线形乙表意</div>
-                <div data-select="10100,1013F" class="opt">爱琴数字</div>
-                <div data-select="10140,1018F" class="opt">古希腊数字</div>
-                <div data-select="10190,101CF" class="opt">古代符号</div>
-                <div data-select="101D0,101FF" class="opt">费斯托斯圆盘</div>
-                <div data-select="10280,1029F" class="opt">吕基亚</div>
-                <div data-select="102A0,102DF" class="opt">加里亚</div>
-                <div data-select="102E0,102FF" class="opt">科普特闰余数字</div>
-                <div data-select="10300,1032F" class="opt">古意大利</div>
-                <div data-select="10330,1034F" class="opt">哥特</div>
-                <div data-select="10350,1037F" class="opt">古彼尔姆</div>
-                <div data-select="10380,1039F" class="opt">乌加里特</div>
-                <div data-select="103A0,103DF" class="opt">古波斯</div>
-                <div data-select="10400,1044F" class="opt">德撒律</div>
-                <div data-select="10450,1047F" class="opt">萧伯纳</div>
-                <div data-select="10480,104AF" class="opt">伊斯马尼亚</div>
-                <div data-select="104B0,104FF" class="opt">奥色治</div>
-                <div data-select="10500,1052F" class="opt">爱尔巴桑</div>
-                <div data-select="10530,1056F" class="opt">高加索阿尔巴尼亚</div>
-                <div data-select="10570,105BF" class="opt">维斯库奇</div>
-                <div data-select="105C0,105FF" class="opt">托德里</div>
-                <div data-select="10600,1077F" class="opt">线形文字甲</div>
-                <div data-select="10780,107BF" class="opt">拉丁扩充己</div>
-                <div data-select="10800,1083F" class="opt">塞浦路斯音节</div>
-                <div data-select="10840,1085F" class="opt">帝国阿拉姆</div>
-                <div data-select="10860,1087F" class="opt">巴尔米拉</div>
-                <div data-select="10880,108AF" class="opt">奈伯特</div>
-                <div data-select="108E0,108FF" class="opt">哈特拉</div>
-                <div data-select="10900,1091F" class="opt">腓尼基</div>
-                <div data-select="10920,1093F" class="opt">吕底亚</div>
-                <div data-select="10980,1099F" class="opt">麦罗埃圣书体</div>
-                <div data-select="109A0,109FF" class="opt">麦罗埃草书体</div>
-                <div data-select="10A00,10A5F" class="opt">佉卢</div>
-                <div data-select="10A60,10A7F" class="opt">古南阿拉比亚</div>
-                <div data-select="10A80,10A9F" class="opt">古北阿拉比亚</div>
-                <div data-select="10AC0,10AFF" class="opt">摩尼</div>
-                <div data-select="10B00,10B3F" class="opt">阿维斯塔</div>
-                <div data-select="10B40,10B5F" class="opt">碑铭体帕提亚</div>
-                <div data-select="10B60,10B7F" class="opt">碑铭体巴列维</div>
-                <div data-select="10B80,10BAF" class="opt">诗篇体巴列维</div>
-                <div data-select="10C00,10C4F" class="opt">突厥</div>
-                <div data-select="10C80,10CFF" class="opt">古匈牙利</div>
-                <div data-select="10D00,10D3F" class="opt">哈尼菲罗兴亚</div>
-                <div data-select="10D40,10D8F" class="opt">加勒伊</div>
-                <div data-select="10E60,10E7F" class="opt">鲁米数字符号</div>
-                <div data-select="10E80,10EBF" class="opt">耶西迪</div>
-                <div data-select="10EC0,10EFF" class="opt">阿拉伯扩充丙</div>
-                <div data-select="10F00,10F2F" class="opt">古粟特</div>
-                <div data-select="10F30,10F6F" class="opt">粟特</div>
-                <div data-select="10F70,10FAF" class="opt">回鹘</div>
-                <div data-select="10FB0,10FDF" class="opt">花剌子模</div>
-                <div data-select="10FE0,10FFF" class="opt">以利买</div>
-                <div data-select="11000,1107F" class="opt">婆罗米</div>
-                <div data-select="11080,110CF" class="opt">开梯</div>
-                <div data-select="110D0,110FF" class="opt">索拉索姆彭</div>
-                <div data-select="11100,1114F" class="opt">查克马</div>
-                <div data-select="11150,1117F" class="opt">默哈杰内</div>
-                <div data-select="11180,111DF" class="opt">沙勒德</div>
-                <div data-select="111E0,111FF" class="opt">僧伽罗古数字</div>
-                <div data-select="11200,1124F" class="opt">科杰基</div>
-                <div data-select="11280,112AF" class="opt">木尔坦</div>
-                <div data-select="112B0,112FF" class="opt">库达本德</div>
-                <div data-select="11300,1137F" class="opt">格兰他</div>
-                <div data-select="11380,113FF" class="opt">图鲁-提加拉里</div>
-                <div data-select="11400,1147F" class="opt">内瓦</div>
-                <div data-select="11480,114DF" class="opt">蒂勒胡塔</div>
-                <div data-select="11580,115FF" class="opt">悉昙</div>
-                <div data-select="11600,1165F" class="opt">莫迪</div>
-                <div data-select="11660,1167F" class="opt">蒙文补充</div>
-                <div data-select="11680,116CF" class="opt">塔克里</div>
-                <div data-select="116D0,116FF" class="opt">缅文扩充丙</div>
-                <div data-select="11700,1174F" class="opt">阿含</div>
-                <div data-select="11800,1184F" class="opt">道格拉</div>
-                <div data-select="118A0,118FF" class="opt">瓦朗奇蒂</div>
-                <div data-select="11900,1195F" class="opt">迪维希阿库鲁</div>
-                <div data-select="119A0,119FF" class="opt">嫩迪城体</div>
-                <div data-select="11A00,11A4F" class="opt">札那巴札尔方字</div>
-                <div data-select="11A50,11AAF" class="opt">索永布</div>
-                <div data-select="11AB0,11ABF" class="opt">统一加拿大土著音节扩充甲</div>
-                <div data-select="11AC0,11AFF" class="opt">包钦豪</div>
-                <div data-select="11B00,11B5F" class="opt">天城体扩充甲</div>
-                <div data-select="11BC0,11BFF" class="opt">苏努瓦尔</div>
-                <div data-select="11C00,11C6F" class="opt">比克舒基</div>
-                <div data-select="11C70,11CBF" class="opt">玛尔钦体</div>
-                <div data-select="11D00,11D5F" class="opt">马萨拉姆贡德</div>
-                <div data-select="11D60,11DAF" class="opt">贡贾尔贡德</div>
-                <div data-select="11EE0,11EFF" class="opt">望加锡</div>
-                <div data-select="11F00,11F5F" class="opt">克维</div>
-                <div data-select="11FB0,11FBF" class="opt">傈僳补充</div>
-                <div data-select="11FC0,11FFF" class="opt">泰米尔补充</div>
-                <div data-select="12000,123FF" class="opt">楔形文字</div>
-                <div data-select="12400,1247F" class="opt">楔形数字及标点</div>
-                <div data-select="12480,1254F" class="opt">早王朝楔形文字</div>
-                <div data-select="12F90,12FFF" class="opt">塞浦路斯-米诺斯</div>
-                <div data-select="13000,1342F" class="opt">埃及圣书体</div>
-                <div data-select="13430,1345F" class="opt">埃及圣书体格式控制符</div>
-                <div data-select="13460,143FF" class="opt">埃及圣书体扩充甲</div>
-                <div data-select="14400,1467F" class="opt">安纳托利亚意音文字</div>
-                <div data-select="16100,1613F" class="opt">古隆克麦</div>
-                <div data-select="16800,16A3F" class="opt">巴默姆补充</div>
-                <div data-select="16A40,16A6F" class="opt">姆鲁</div>
-                <div data-select="16A70,16ACF" class="opt">通萨</div>
-                <div data-select="16AD0,16AFF" class="opt">巴索奥瓦</div>
-                <div data-select="16B00,16B8F" class="opt">帕皓苗</div>
-                <div data-select="16D40,16D7F" class="opt">基拉特莱</div>
-                <div data-select="16E40,16E9F" class="opt">梅代法伊德林</div>
-                <div data-select="16F00,16F9F" class="opt">苗(老)</div>
-                <div data-select="16FE0,16FFF" class="opt">表意符号及标点</div>
-                <div data-select="17000,187FF" class="opt">西夏</div>
-                <div data-select="18800,18AFF" class="opt">西夏偏旁</div>
-                <div data-select="18B00,18CFF" class="opt">契丹小字</div>
-                <div data-select="18D00,18D7F" class="opt">西夏补充</div>
-                <div data-select="1AFF0,1AFFF" class="opt">假名扩充乙</div>
-                <div data-select="1B000,1B0FF" class="opt">假名补充</div>
-                <div data-select="1B100,1B12F" class="opt">假名扩充甲</div>
-                <div data-select="1B130,1B16F" class="opt">小型假名扩充</div>
-                <div data-select="1B170,1B2FF" class="opt">女书</div>
-                <div data-select="1BC00,1BC9F" class="opt">杜普雷速记</div>
-                <div data-select="1BCA0,1BCAF" class="opt">速记格式控制符</div>
-                <div data-select="1CC00,1CEBF" class="opt">遗留电脑符号补充</div>
-                <div data-select="1CF00,1CFCF" class="opt">兹纳缅内音符</div>
-                <div data-select="1D000,1D0FF" class="opt">拜占庭乐符</div>
-                <div data-select="1D100,1D1FF" class="opt">乐符</div>
-                <div data-select="1D200,1D24F" class="opt">古希腊音符</div>
-                <div data-select="1D2C0,1D2DF" class="opt">卡克托维克数字</div>
-                <div data-select="1D2E0,1D2FF" class="opt">玛雅数字</div>
-                <div data-select="1D300,1D35F" class="opt">太玄经卦爻</div>
-                <div data-select="1D360,1D37F" class="opt">算筹</div>
-                <div data-select="1D400,1D7FF" class="opt">数学字母数字符号</div>
-                <div data-select="1D800,1DAAF" class="opt">萨顿手语</div>
-                <div data-select="1DF00,1DFFF" class="opt">拉丁扩充庚</div>
-                <div data-select="1E000,1E02F" class="opt">格拉哥里补充</div>
-                <div data-select="1E030,1E08F" class="opt">西里尔扩充丁</div>
-                <div data-select="1E100,1E14F" class="opt">苗(创世)</div>
-                <div data-select="1E290,1E2BF" class="opt">托托</div>
-                <div data-select="1E2C0,1E2FF" class="opt">万乔</div>
-                <div data-select="1E4D0,1E4FF" class="opt">纳格蒙达里</div>
-                <div data-select="1E5D0,1E5FF" class="opt">奥尔奥那尔</div>
-                <div data-select="1E7E0,1E7FF" class="opt">埃塞扩充乙</div>
-                <div data-select="1E800,1E8DF" class="opt">门迪基卡奎</div>
-                <div data-select="1E900,1E95F" class="opt">阿德拉姆</div>
-                <div data-select="1EC70,1ECBF" class="opt">印度帐目数字</div>
-                <div data-select="1ED00,1ED4F" class="opt">奥斯曼帐目数字</div>
-                <div data-select="1EE00,1EEFF" class="opt">阿拉伯数学字母符号</div>
-                <div data-select="1F000,1F02F" class="opt">麻将牌</div>
-                <div data-select="1F030,1F09F" class="opt">多米诺牌</div>
-                <div data-select="1F0A0,1F0FF" class="opt">扑克</div>
-                <div data-select="1F100,1F1FF" class="opt">附围字母数字补充</div>
-                <div data-select="1F200,1F2FF" class="opt">附围表意文字补充</div>
-                <div data-select="1F300,1F5FF" class="opt">各式符号及象形</div>
-                <div data-select="1F600,1F64F" class="opt">表情</div>
-                <div data-select="1F650,1F67F" class="opt">装饰什锦</div>
-                <div data-select="1F680,1F6FF" class="opt">交通及地图符号</div>
-                <div data-select="1F700,1F77F" class="opt">炼金术符</div>
-                <div data-select="1F780,1F7FF" class="opt">几何形状扩充</div>
-                <div data-select="1F800,1F8FF" class="opt">增补箭头丙</div>
-                <div data-select="1F900,1F9FF" class="opt">增补符号及象形</div>
-                <div data-select="1FA00,1FA6F" class="opt">棋符</div>
-                <div data-select="1FA70,1FAFF" class="opt">符号及象形扩充甲</div>
-                <div data-select="1FB00,1FBFF" class="opt">遗留电脑符号</div>
-                <div data-select="20000,2A6DF" class="opt">汉字统一表意扩充乙</div>
-                <div data-select="2A700,2B73F" class="opt">汉字统一表意扩充丙</div>
-                <div data-select="2B740,2B81F" class="opt">汉字统一表意扩充丁</div>
-                <div data-select="2B820,2CEAF" class="opt">汉字统一表意扩充戊</div>
-                <div data-select="2CEB0,2EBEF" class="opt">汉字统一表意扩充己</div>
-                <div data-select="2EBF0,2EE5F" class="opt">汉字统一表意扩充壬</div>
-                <div data-select="2F800,2FA1F" class="opt">汉字兼容表意补充</div>
-                <div data-select="30000,3134F" class="opt">汉字统一表意扩充庚</div>
-                <div data-select="31350,323AF" class="opt">汉字统一表意扩充辛</div>
-                <div data-select="E0000,E007F" class="opt">标签</div>
-                <div data-select="E0100,E01EF" class="opt">变体选择符补充</div>
-                <div data-select="F0000,FFFFF" class="opt">增补私用区甲</div>
-                <div data-select="100000,10FFFF" class="opt">增补私用区乙</div>
-              </div>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/fontFallback.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/materialInput.css" />
+    <link rel="stylesheet" href="../css/counter.css" />
+    <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css" />
+    <link rel="stylesheet" href="../css/select.css" />
+    <link rel="stylesheet" href="../css/tools/randStr.css" />
+    <script defer src="../../assets/DefinedCharacterList.js"></script>
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/autoHeight.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/materialInput.js"></script>
+    <script defer src="../js/counter.js"></script>
+    <script defer src="../js/select.js"></script>
+    <script defer src="../js/tools/randStr.js"></script>
+  </head>
+  <body>
+    <div>
+      <main>
+        <div>
+          <div id="count-section">
+            <div class="material-input-container">
+              <input type="number" id="count-input" value="100" />
+              <label for="count-input">数量</label>
             </div>
-            <div id="custom-blocks-container"></div>
+            <input
+              type="range"
+              id="count-slider"
+              min="1"
+              max="1000"
+              value="100" />
           </div>
-          <label><input type="checkbox" id="no-repeat">不重复<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-          <label><input type="checkbox" id="contains-no-undefined-characters">不包含未定义字符<svg viewbox="0 0 22 20" width="11px" height="10px"><polyline points="2 12 8 18 20 2" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></label>
-        </div>
+          <div id="checkbox-section">
+            <label>
+              <input type="checkbox" id="include-digits" />
+              包含数字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-lowercase" />
+              包含小写字母
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-uppercase" />
+              包含大写字母
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-special-symbols" />
+              包含特殊符号
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-basic-chinese" />
+              包含基本区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-a-chinese" />
+              包含扩展 A 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-b-chinese" />
+              包含扩展 B 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-c-chinese" />
+              包含扩展 C 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-d-chinese" />
+              包含扩展 D 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-e-chinese" />
+              包含扩展 E 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-f-chinese" />
+              包含扩展 F 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-g-chinese" />
+              包含扩展 G 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-h-chinese" />
+              包含扩展 H 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-extended-i-chinese" />
+              包含扩展 I 区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-compatible-chinese" />
+              包含兼容区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                id="include-compatible-supplement-chinese" />
+              包含兼容补充区汉字
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="include-custom-char" />
+              包含自定义字符
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <div class="material-input-container">
+              <input type="text" id="custom-char" />
+              <label for="custom-char" class="placeholder">
+                自定义字符
+                <svg viewbox="0 0 22 20" width="11px" height="10px">
+                  <polyline
+                    points="2 12 8 18 20 2"
+                    fill="none"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></polyline>
+                </svg>
+              </label>
+            </div>
+            <div id="custom-interval-section" class="options-container">
+              <label>
+                <input type="checkbox" id="include-custom-interval" />
+                包含自定义区间
+                <svg viewbox="0 0 22 20" width="11px" height="10px">
+                  <polyline
+                    points="2 12 8 18 20 2"
+                    fill="none"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></polyline>
+                </svg>
+              </label>
+              <button
+                id="add-custom-interval"
+                class="add-button nf nf-cod-add"></button>
+              <div id="custom-interval-container"></div>
+            </div>
+            <div id="unicode-block-section">
+              <label>
+                <input type="checkbox" id="include-custom-unicode-blocks" />
+                包含自定义 Unicode 区段
+                <svg viewbox="0 0 22 20" width="11px" height="10px">
+                  <polyline
+                    points="2 12 8 18 20 2"
+                    fill="none"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></polyline>
+                </svg>
+              </label>
+              <div class="select-container multi" id="select-blocks">
+                <div class="select">
+                  <div class="select-content">
+                    <span class="cur-select" data-default-text="选择区段">
+                      选择区段
+                    </span>
+                    <span class="nf nf-fa-angle_down"></span>
+                  </div>
+                  <input type="text" class="filter" placeholder="筛选" />
+                </div>
+                <!-- ((?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4})\.\.((?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4})\|(?:[0-9a-fA-F]|10)?[0-9a-fA-F]{0,4}\|(.+?)\|.* -->
+                <!--                 <div data-select="$1,$2" class="opt">$3</div> -->
+                <div class="opts-list">
+                  <div data-select="0000,007F" class="opt">基本拉丁</div>
+                  <div data-select="0080,00FF" class="opt">拉丁一补充</div>
+                  <div data-select="0100,017F" class="opt">拉丁扩充甲</div>
+                  <div data-select="0180,024F" class="opt">拉丁扩充乙</div>
+                  <div data-select="0250,02AF" class="opt">国际音标扩充</div>
+                  <div data-select="02B0,02FF" class="opt">有距修饰字</div>
+                  <div data-select="0300,036F" class="opt">结合变音标记</div>
+                  <div data-select="0370,03FF" class="opt">希腊及科普特</div>
+                  <div data-select="0400,04FF" class="opt">西里尔</div>
+                  <div data-select="0500,052F" class="opt">西里尔补充</div>
+                  <div data-select="0530,058F" class="opt">亚美尼亚</div>
+                  <div data-select="0590,05FF" class="opt">希伯来</div>
+                  <div data-select="0600,06FF" class="opt">阿拉伯</div>
+                  <div data-select="0700,074F" class="opt">叙利亚</div>
+                  <div data-select="0750,077F" class="opt">阿拉伯补充</div>
+                  <div data-select="0780,07BF" class="opt">塔纳</div>
+                  <div data-select="07C0,07FF" class="opt">恩科(西非书面)</div>
+                  <div data-select="0800,083F" class="opt">撒马利亚</div>
+                  <div data-select="0840,085F" class="opt">曼德恩</div>
+                  <div data-select="0860,086F" class="opt">叙利亚补充</div>
+                  <div data-select="0870,089F" class="opt">阿拉伯扩充乙</div>
+                  <div data-select="08A0,08FF" class="opt">阿拉伯扩充甲</div>
+                  <div data-select="0900,097F" class="opt">天城体</div>
+                  <div data-select="0980,09FF" class="opt">孟加拉</div>
+                  <div data-select="0A00,0A7F" class="opt">果鲁穆奇</div>
+                  <div data-select="0A80,0AFF" class="opt">古吉拉特</div>
+                  <div data-select="0B00,0B7F" class="opt">奥里亚</div>
+                  <div data-select="0B80,0BFF" class="opt">泰米尔</div>
+                  <div data-select="0C00,0C7F" class="opt">泰卢固</div>
+                  <div data-select="0C80,0CFF" class="opt">卡纳达</div>
+                  <div data-select="0D00,0D7F" class="opt">马拉雅拉姆</div>
+                  <div data-select="0D80,0DFF" class="opt">僧伽罗</div>
+                  <div data-select="0E00,0E7F" class="opt">泰文</div>
+                  <div data-select="0E80,0EFF" class="opt">老挝</div>
+                  <div data-select="0F00,0FFF" class="opt">藏文</div>
+                  <div data-select="1000,109F" class="opt">缅文</div>
+                  <div data-select="10A0,10FF" class="opt">格鲁吉亚</div>
+                  <div data-select="1100,11FF" class="opt">谚文字母</div>
+                  <div data-select="1200,137F" class="opt">埃塞</div>
+                  <div data-select="1380,139F" class="opt">埃塞补充</div>
+                  <div data-select="13A0,13FF" class="opt">切罗基</div>
+                  <div data-select="1400,167F" class="opt">
+                    统一加拿大土著音节
+                  </div>
+                  <div data-select="1680,169F" class="opt">欧甘</div>
+                  <div data-select="16A0,16FF" class="opt">卢恩</div>
+                  <div data-select="1700,171F" class="opt">他加禄</div>
+                  <div data-select="1720,173F" class="opt">哈努努奥</div>
+                  <div data-select="1740,175F" class="opt">布希德</div>
+                  <div data-select="1760,177F" class="opt">蒂亚格班瓦</div>
+                  <div data-select="1780,17FF" class="opt">高棉</div>
+                  <div data-select="1800,18AF" class="opt">蒙文</div>
+                  <div data-select="18B0,18FF" class="opt">
+                    统一加拿大土著音节扩充
+                  </div>
+                  <div data-select="1900,194F" class="opt">林布</div>
+                  <div data-select="1950,197F" class="opt">傣㐻</div>
+                  <div data-select="1980,19DF" class="opt">新傣仂</div>
+                  <div data-select="19E0,19FF" class="opt">高棉符号</div>
+                  <div data-select="1A00,1A1F" class="opt">布吉</div>
+                  <div data-select="1A20,1AAF" class="opt">傣昙</div>
+                  <div data-select="1AB0,1AFF" class="opt">
+                    结合变音标记扩充
+                  </div>
+                  <div data-select="1B00,1B7F" class="opt">巴厘</div>
+                  <div data-select="1B80,1BBF" class="opt">巽他</div>
+                  <div data-select="1BC0,1BFF" class="opt">巴塔克</div>
+                  <div data-select="1C00,1C4F" class="opt">雷布查</div>
+                  <div data-select="1C50,1C7F" class="opt">奥尔奇基</div>
+                  <div data-select="1C80,1C8F" class="opt">西里尔扩充丙</div>
+                  <div data-select="1C90,1CBF" class="opt">格鲁吉亚扩充</div>
+                  <div data-select="1CC0,1CCF" class="opt">巽他补充</div>
+                  <div data-select="1CD0,1CFF" class="opt">吠陀扩充</div>
+                  <div data-select="1D00,1D7F" class="opt">音标扩充</div>
+                  <div data-select="1D80,1DBF" class="opt">音标扩充增补</div>
+                  <div data-select="1DC0,1DFF" class="opt">
+                    结合变音标记补充
+                  </div>
+                  <div data-select="1E00,1EFF" class="opt">拉丁扩充追加</div>
+                  <div data-select="1F00,1FFF" class="opt">希腊扩充</div>
+                  <div data-select="2000,206F" class="opt">通用标点</div>
+                  <div data-select="2070,209F" class="opt">上标及下标</div>
+                  <div data-select="20A0,20CF" class="opt">货币符号</div>
+                  <div data-select="20D0,20FF" class="opt">结合变音记号</div>
+                  <div data-select="2100,214F" class="opt">类字符号</div>
+                  <div data-select="2150,218F" class="opt">数字形式</div>
+                  <div data-select="2190,21FF" class="opt">箭头</div>
+                  <div data-select="2200,22FF" class="opt">数学运算符</div>
+                  <div data-select="2300,23FF" class="opt">各式技术符</div>
+                  <div data-select="2400,243F" class="opt">控制图符</div>
+                  <div data-select="2440,245F" class="opt">光学字符识别</div>
+                  <div data-select="2460,24FF" class="opt">附围字母数字</div>
+                  <div data-select="2500,257F" class="opt">制表符</div>
+                  <div data-select="2580,259F" class="opt">方块构素</div>
+                  <div data-select="25A0,25FF" class="opt">几何形状</div>
+                  <div data-select="2600,26FF" class="opt">各式符号</div>
+                  <div data-select="2700,27BF" class="opt">什锦</div>
+                  <div data-select="27C0,27EF" class="opt">各式数学符号甲</div>
+                  <div data-select="27F0,27FF" class="opt">增补箭头甲</div>
+                  <div data-select="2800,28FF" class="opt">布莱叶盲文点字</div>
+                  <div data-select="2900,297F" class="opt">增补箭头乙</div>
+                  <div data-select="2980,29FF" class="opt">各式数学符号乙</div>
+                  <div data-select="2A00,2AFF" class="opt">增补数学运算符</div>
+                  <div data-select="2B00,2BFF" class="opt">各式符号及箭头</div>
+                  <div data-select="2C00,2C5F" class="opt">格拉哥里</div>
+                  <div data-select="2C60,2C7F" class="opt">拉丁扩充丙</div>
+                  <div data-select="2C80,2CFF" class="opt">科普特</div>
+                  <div data-select="2D00,2D2F" class="opt">格鲁吉亚补充</div>
+                  <div data-select="2D30,2D7F" class="opt">提非纳</div>
+                  <div data-select="2D80,2DDF" class="opt">埃塞扩充</div>
+                  <div data-select="2DE0,2DFF" class="opt">西里尔扩充甲</div>
+                  <div data-select="2E00,2E7F" class="opt">增补标点</div>
+                  <div data-select="2E80,2EFF" class="opt">汉字部首补充</div>
+                  <div data-select="2F00,2FDF" class="opt">康熙部首</div>
+                  <div data-select="2FF0,2FFF" class="opt">表意描述字符</div>
+                  <div data-select="3000,303F" class="opt">
+                    中日韩符号及标点
+                  </div>
+                  <div data-select="3040,309F" class="opt">平假名</div>
+                  <div data-select="30A0,30FF" class="opt">片假名</div>
+                  <div data-select="3100,312F" class="opt">注音</div>
+                  <div data-select="3130,318F" class="opt">谚文兼容字母</div>
+                  <div data-select="3190,319F" class="opt">汉文训读</div>
+                  <div data-select="31A0,31BF" class="opt">注音扩充</div>
+                  <div data-select="31C0,31EF" class="opt">汉字笔画</div>
+                  <div data-select="31F0,31FF" class="opt">片假名音标扩充</div>
+                  <div data-select="3200,32FF" class="opt">
+                    附围中日韩字母及月份
+                  </div>
+                  <div data-select="3300,33FF" class="opt">中日韩兼容</div>
+                  <div data-select="3400,4DBF" class="opt">
+                    汉字统一表意扩充甲
+                  </div>
+                  <div data-select="4DC0,4DFF" class="opt">易经六十四卦</div>
+                  <div data-select="4E00,9FFF" class="opt">汉字统一表意</div>
+                  <div data-select="A000,A48F" class="opt">彝文音节</div>
+                  <div data-select="A490,A4CF" class="opt">彝文部首</div>
+                  <div data-select="A4D0,A4FF" class="opt">傈僳(老)</div>
+                  <div data-select="A500,A63F" class="opt">瓦伊</div>
+                  <div data-select="A640,A69F" class="opt">西里尔扩充乙</div>
+                  <div data-select="A6A0,A6FF" class="opt">巴默姆</div>
+                  <div data-select="A700,A71F" class="opt">声调修饰字</div>
+                  <div data-select="A720,A7FF" class="opt">拉丁扩充丁</div>
+                  <div data-select="A800,A82F" class="opt">西洛蒂城体</div>
+                  <div data-select="A830,A83F" class="opt">
+                    通用印度数字形式
+                  </div>
+                  <div data-select="A840,A87F" class="opt">八思巴</div>
+                  <div data-select="A880,A8DF" class="opt">索拉什特拉</div>
+                  <div data-select="A8E0,A8FF" class="opt">天城体扩充</div>
+                  <div data-select="A900,A92F" class="opt">克耶利</div>
+                  <div data-select="A930,A95F" class="opt">雷姜</div>
+                  <div data-select="A960,A97F" class="opt">谚文字母扩充甲</div>
+                  <div data-select="A980,A9DF" class="opt">爪哇</div>
+                  <div data-select="A9E0,A9FF" class="opt">缅文扩充乙</div>
+                  <div data-select="AA00,AA5F" class="opt">占文</div>
+                  <div data-select="AA60,AA7F" class="opt">缅文扩充甲</div>
+                  <div data-select="AA80,AADF" class="opt">傣越</div>
+                  <div data-select="AAE0,AAFF" class="opt">米代文扩充</div>
+                  <div data-select="AB00,AB2F" class="opt">埃塞扩充甲</div>
+                  <div data-select="AB30,AB6F" class="opt">拉丁扩充戊</div>
+                  <div data-select="AB70,ABBF" class="opt">切罗基补充</div>
+                  <div data-select="ABC0,ABFF" class="opt">米代文</div>
+                  <div data-select="AC00,D7AF" class="opt">谚文音节</div>
+                  <div data-select="D7B0,D7FF" class="opt">谚文字母扩充乙</div>
+                  <div data-select="D800,DB7F" class="opt">高位替代</div>
+                  <div data-select="DB80,DBFF" class="opt">高位私用替代</div>
+                  <div data-select="DC00,DFFF" class="opt">低位替代</div>
+                  <div data-select="E000,F8FF" class="opt">私用区</div>
+                  <div data-select="F900,FAFF" class="opt">汉字兼容表意</div>
+                  <div data-select="FB00,FB4F" class="opt">字母表现形式</div>
+                  <div data-select="FB50,FDFF" class="opt">
+                    阿拉伯表现形式甲
+                  </div>
+                  <div data-select="FE00,FE0F" class="opt">变体选择符</div>
+                  <div data-select="FE10,FE1F" class="opt">竖排形式</div>
+                  <div data-select="FE20,FE2F" class="opt">结合半边标记</div>
+                  <div data-select="FE30,FE4F" class="opt">中日韩兼容形式</div>
+                  <div data-select="FE50,FE6F" class="opt">小型形式变体</div>
+                  <div data-select="FE70,FEFF" class="opt">
+                    阿拉伯表现形式乙
+                  </div>
+                  <div data-select="FF00,FFEF" class="opt">半角及全角</div>
+                  <div data-select="FFF0,FFFF" class="opt">特殊</div>
+                  <div data-select="10000,1007F" class="opt">线形乙音节</div>
+                  <div data-select="10080,100FF" class="opt">线形乙表意</div>
+                  <div data-select="10100,1013F" class="opt">爱琴数字</div>
+                  <div data-select="10140,1018F" class="opt">古希腊数字</div>
+                  <div data-select="10190,101CF" class="opt">古代符号</div>
+                  <div data-select="101D0,101FF" class="opt">费斯托斯圆盘</div>
+                  <div data-select="10280,1029F" class="opt">吕基亚</div>
+                  <div data-select="102A0,102DF" class="opt">加里亚</div>
+                  <div data-select="102E0,102FF" class="opt">
+                    科普特闰余数字
+                  </div>
+                  <div data-select="10300,1032F" class="opt">古意大利</div>
+                  <div data-select="10330,1034F" class="opt">哥特</div>
+                  <div data-select="10350,1037F" class="opt">古彼尔姆</div>
+                  <div data-select="10380,1039F" class="opt">乌加里特</div>
+                  <div data-select="103A0,103DF" class="opt">古波斯</div>
+                  <div data-select="10400,1044F" class="opt">德撒律</div>
+                  <div data-select="10450,1047F" class="opt">萧伯纳</div>
+                  <div data-select="10480,104AF" class="opt">伊斯马尼亚</div>
+                  <div data-select="104B0,104FF" class="opt">奥色治</div>
+                  <div data-select="10500,1052F" class="opt">爱尔巴桑</div>
+                  <div data-select="10530,1056F" class="opt">
+                    高加索阿尔巴尼亚
+                  </div>
+                  <div data-select="10570,105BF" class="opt">维斯库奇</div>
+                  <div data-select="105C0,105FF" class="opt">托德里</div>
+                  <div data-select="10600,1077F" class="opt">线形文字甲</div>
+                  <div data-select="10780,107BF" class="opt">拉丁扩充己</div>
+                  <div data-select="10800,1083F" class="opt">塞浦路斯音节</div>
+                  <div data-select="10840,1085F" class="opt">帝国阿拉姆</div>
+                  <div data-select="10860,1087F" class="opt">巴尔米拉</div>
+                  <div data-select="10880,108AF" class="opt">奈伯特</div>
+                  <div data-select="108E0,108FF" class="opt">哈特拉</div>
+                  <div data-select="10900,1091F" class="opt">腓尼基</div>
+                  <div data-select="10920,1093F" class="opt">吕底亚</div>
+                  <div data-select="10980,1099F" class="opt">麦罗埃圣书体</div>
+                  <div data-select="109A0,109FF" class="opt">麦罗埃草书体</div>
+                  <div data-select="10A00,10A5F" class="opt">佉卢</div>
+                  <div data-select="10A60,10A7F" class="opt">古南阿拉比亚</div>
+                  <div data-select="10A80,10A9F" class="opt">古北阿拉比亚</div>
+                  <div data-select="10AC0,10AFF" class="opt">摩尼</div>
+                  <div data-select="10B00,10B3F" class="opt">阿维斯塔</div>
+                  <div data-select="10B40,10B5F" class="opt">碑铭体帕提亚</div>
+                  <div data-select="10B60,10B7F" class="opt">碑铭体巴列维</div>
+                  <div data-select="10B80,10BAF" class="opt">诗篇体巴列维</div>
+                  <div data-select="10C00,10C4F" class="opt">突厥</div>
+                  <div data-select="10C80,10CFF" class="opt">古匈牙利</div>
+                  <div data-select="10D00,10D3F" class="opt">哈尼菲罗兴亚</div>
+                  <div data-select="10D40,10D8F" class="opt">加勒伊</div>
+                  <div data-select="10E60,10E7F" class="opt">鲁米数字符号</div>
+                  <div data-select="10E80,10EBF" class="opt">耶西迪</div>
+                  <div data-select="10EC0,10EFF" class="opt">阿拉伯扩充丙</div>
+                  <div data-select="10F00,10F2F" class="opt">古粟特</div>
+                  <div data-select="10F30,10F6F" class="opt">粟特</div>
+                  <div data-select="10F70,10FAF" class="opt">回鹘</div>
+                  <div data-select="10FB0,10FDF" class="opt">花剌子模</div>
+                  <div data-select="10FE0,10FFF" class="opt">以利买</div>
+                  <div data-select="11000,1107F" class="opt">婆罗米</div>
+                  <div data-select="11080,110CF" class="opt">开梯</div>
+                  <div data-select="110D0,110FF" class="opt">索拉索姆彭</div>
+                  <div data-select="11100,1114F" class="opt">查克马</div>
+                  <div data-select="11150,1117F" class="opt">默哈杰内</div>
+                  <div data-select="11180,111DF" class="opt">沙勒德</div>
+                  <div data-select="111E0,111FF" class="opt">僧伽罗古数字</div>
+                  <div data-select="11200,1124F" class="opt">科杰基</div>
+                  <div data-select="11280,112AF" class="opt">木尔坦</div>
+                  <div data-select="112B0,112FF" class="opt">库达本德</div>
+                  <div data-select="11300,1137F" class="opt">格兰他</div>
+                  <div data-select="11380,113FF" class="opt">图鲁-提加拉里</div>
+                  <div data-select="11400,1147F" class="opt">内瓦</div>
+                  <div data-select="11480,114DF" class="opt">蒂勒胡塔</div>
+                  <div data-select="11580,115FF" class="opt">悉昙</div>
+                  <div data-select="11600,1165F" class="opt">莫迪</div>
+                  <div data-select="11660,1167F" class="opt">蒙文补充</div>
+                  <div data-select="11680,116CF" class="opt">塔克里</div>
+                  <div data-select="116D0,116FF" class="opt">缅文扩充丙</div>
+                  <div data-select="11700,1174F" class="opt">阿含</div>
+                  <div data-select="11800,1184F" class="opt">道格拉</div>
+                  <div data-select="118A0,118FF" class="opt">瓦朗奇蒂</div>
+                  <div data-select="11900,1195F" class="opt">迪维希阿库鲁</div>
+                  <div data-select="119A0,119FF" class="opt">嫩迪城体</div>
+                  <div data-select="11A00,11A4F" class="opt">
+                    札那巴札尔方字
+                  </div>
+                  <div data-select="11A50,11AAF" class="opt">索永布</div>
+                  <div data-select="11AB0,11ABF" class="opt">
+                    统一加拿大土著音节扩充甲
+                  </div>
+                  <div data-select="11AC0,11AFF" class="opt">包钦豪</div>
+                  <div data-select="11B00,11B5F" class="opt">天城体扩充甲</div>
+                  <div data-select="11BC0,11BFF" class="opt">苏努瓦尔</div>
+                  <div data-select="11C00,11C6F" class="opt">比克舒基</div>
+                  <div data-select="11C70,11CBF" class="opt">玛尔钦体</div>
+                  <div data-select="11D00,11D5F" class="opt">马萨拉姆贡德</div>
+                  <div data-select="11D60,11DAF" class="opt">贡贾尔贡德</div>
+                  <div data-select="11EE0,11EFF" class="opt">望加锡</div>
+                  <div data-select="11F00,11F5F" class="opt">克维</div>
+                  <div data-select="11FB0,11FBF" class="opt">傈僳补充</div>
+                  <div data-select="11FC0,11FFF" class="opt">泰米尔补充</div>
+                  <div data-select="12000,123FF" class="opt">楔形文字</div>
+                  <div data-select="12400,1247F" class="opt">
+                    楔形数字及标点
+                  </div>
+                  <div data-select="12480,1254F" class="opt">
+                    早王朝楔形文字
+                  </div>
+                  <div data-select="12F90,12FFF" class="opt">
+                    塞浦路斯-米诺斯
+                  </div>
+                  <div data-select="13000,1342F" class="opt">埃及圣书体</div>
+                  <div data-select="13430,1345F" class="opt">
+                    埃及圣书体格式控制符
+                  </div>
+                  <div data-select="13460,143FF" class="opt">
+                    埃及圣书体扩充甲
+                  </div>
+                  <div data-select="14400,1467F" class="opt">
+                    安纳托利亚意音文字
+                  </div>
+                  <div data-select="16100,1613F" class="opt">古隆克麦</div>
+                  <div data-select="16800,16A3F" class="opt">巴默姆补充</div>
+                  <div data-select="16A40,16A6F" class="opt">姆鲁</div>
+                  <div data-select="16A70,16ACF" class="opt">通萨</div>
+                  <div data-select="16AD0,16AFF" class="opt">巴索奥瓦</div>
+                  <div data-select="16B00,16B8F" class="opt">帕皓苗</div>
+                  <div data-select="16D40,16D7F" class="opt">基拉特莱</div>
+                  <div data-select="16E40,16E9F" class="opt">梅代法伊德林</div>
+                  <div data-select="16F00,16F9F" class="opt">苗(老)</div>
+                  <div data-select="16FE0,16FFF" class="opt">
+                    表意符号及标点
+                  </div>
+                  <div data-select="17000,187FF" class="opt">西夏</div>
+                  <div data-select="18800,18AFF" class="opt">西夏偏旁</div>
+                  <div data-select="18B00,18CFF" class="opt">契丹小字</div>
+                  <div data-select="18D00,18D7F" class="opt">西夏补充</div>
+                  <div data-select="1AFF0,1AFFF" class="opt">假名扩充乙</div>
+                  <div data-select="1B000,1B0FF" class="opt">假名补充</div>
+                  <div data-select="1B100,1B12F" class="opt">假名扩充甲</div>
+                  <div data-select="1B130,1B16F" class="opt">小型假名扩充</div>
+                  <div data-select="1B170,1B2FF" class="opt">女书</div>
+                  <div data-select="1BC00,1BC9F" class="opt">杜普雷速记</div>
+                  <div data-select="1BCA0,1BCAF" class="opt">
+                    速记格式控制符
+                  </div>
+                  <div data-select="1CC00,1CEBF" class="opt">
+                    遗留电脑符号补充
+                  </div>
+                  <div data-select="1CF00,1CFCF" class="opt">兹纳缅内音符</div>
+                  <div data-select="1D000,1D0FF" class="opt">拜占庭乐符</div>
+                  <div data-select="1D100,1D1FF" class="opt">乐符</div>
+                  <div data-select="1D200,1D24F" class="opt">古希腊音符</div>
+                  <div data-select="1D2C0,1D2DF" class="opt">
+                    卡克托维克数字
+                  </div>
+                  <div data-select="1D2E0,1D2FF" class="opt">玛雅数字</div>
+                  <div data-select="1D300,1D35F" class="opt">太玄经卦爻</div>
+                  <div data-select="1D360,1D37F" class="opt">算筹</div>
+                  <div data-select="1D400,1D7FF" class="opt">
+                    数学字母数字符号
+                  </div>
+                  <div data-select="1D800,1DAAF" class="opt">萨顿手语</div>
+                  <div data-select="1DF00,1DFFF" class="opt">拉丁扩充庚</div>
+                  <div data-select="1E000,1E02F" class="opt">格拉哥里补充</div>
+                  <div data-select="1E030,1E08F" class="opt">西里尔扩充丁</div>
+                  <div data-select="1E100,1E14F" class="opt">苗(创世)</div>
+                  <div data-select="1E290,1E2BF" class="opt">托托</div>
+                  <div data-select="1E2C0,1E2FF" class="opt">万乔</div>
+                  <div data-select="1E4D0,1E4FF" class="opt">纳格蒙达里</div>
+                  <div data-select="1E5D0,1E5FF" class="opt">奥尔奥那尔</div>
+                  <div data-select="1E7E0,1E7FF" class="opt">埃塞扩充乙</div>
+                  <div data-select="1E800,1E8DF" class="opt">门迪基卡奎</div>
+                  <div data-select="1E900,1E95F" class="opt">阿德拉姆</div>
+                  <div data-select="1EC70,1ECBF" class="opt">印度帐目数字</div>
+                  <div data-select="1ED00,1ED4F" class="opt">
+                    奥斯曼帐目数字
+                  </div>
+                  <div data-select="1EE00,1EEFF" class="opt">
+                    阿拉伯数学字母符号
+                  </div>
+                  <div data-select="1F000,1F02F" class="opt">麻将牌</div>
+                  <div data-select="1F030,1F09F" class="opt">多米诺牌</div>
+                  <div data-select="1F0A0,1F0FF" class="opt">扑克</div>
+                  <div data-select="1F100,1F1FF" class="opt">
+                    附围字母数字补充
+                  </div>
+                  <div data-select="1F200,1F2FF" class="opt">
+                    附围表意文字补充
+                  </div>
+                  <div data-select="1F300,1F5FF" class="opt">
+                    各式符号及象形
+                  </div>
+                  <div data-select="1F600,1F64F" class="opt">表情</div>
+                  <div data-select="1F650,1F67F" class="opt">装饰什锦</div>
+                  <div data-select="1F680,1F6FF" class="opt">
+                    交通及地图符号
+                  </div>
+                  <div data-select="1F700,1F77F" class="opt">炼金术符</div>
+                  <div data-select="1F780,1F7FF" class="opt">几何形状扩充</div>
+                  <div data-select="1F800,1F8FF" class="opt">增补箭头丙</div>
+                  <div data-select="1F900,1F9FF" class="opt">
+                    增补符号及象形
+                  </div>
+                  <div data-select="1FA00,1FA6F" class="opt">棋符</div>
+                  <div data-select="1FA70,1FAFF" class="opt">
+                    符号及象形扩充甲
+                  </div>
+                  <div data-select="1FB00,1FBFF" class="opt">遗留电脑符号</div>
+                  <div data-select="20000,2A6DF" class="opt">
+                    汉字统一表意扩充乙
+                  </div>
+                  <div data-select="2A700,2B73F" class="opt">
+                    汉字统一表意扩充丙
+                  </div>
+                  <div data-select="2B740,2B81F" class="opt">
+                    汉字统一表意扩充丁
+                  </div>
+                  <div data-select="2B820,2CEAF" class="opt">
+                    汉字统一表意扩充戊
+                  </div>
+                  <div data-select="2CEB0,2EBEF" class="opt">
+                    汉字统一表意扩充己
+                  </div>
+                  <div data-select="2EBF0,2EE5F" class="opt">
+                    汉字统一表意扩充壬
+                  </div>
+                  <div data-select="2F800,2FA1F" class="opt">
+                    汉字兼容表意补充
+                  </div>
+                  <div data-select="30000,3134F" class="opt">
+                    汉字统一表意扩充庚
+                  </div>
+                  <div data-select="31350,323AF" class="opt">
+                    汉字统一表意扩充辛
+                  </div>
+                  <div data-select="E0000,E007F" class="opt">标签</div>
+                  <div data-select="E0100,E01EF" class="opt">
+                    变体选择符补充
+                  </div>
+                  <div data-select="F0000,FFFFF" class="opt">增补私用区甲</div>
+                  <div data-select="100000,10FFFF" class="opt">
+                    增补私用区乙
+                  </div>
+                </div>
+              </div>
+              <div id="custom-blocks-container"></div>
+            </div>
+            <label>
+              <input type="checkbox" id="no-repeat" />
+              不重复
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+            <label>
+              <input type="checkbox" id="contains-no-undefined-characters" />
+              不包含未定义字符
+              <svg viewbox="0 0 22 20" width="11px" height="10px">
+                <polyline
+                  points="2 12 8 18 20 2"
+                  fill="none"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></polyline>
+              </svg>
+            </label>
+          </div>
 
-        <div id="action-buttons" class="options-container">
-          <button id="gen" class="primary-button">生成随机字符</button>
-          <button id="clear-text" class="secondary-button">清空</button>
-        </div>
+          <div id="action-buttons" class="options-container">
+            <button id="gen" class="primary-button">生成随机字符</button>
+            <button id="clear-text" class="secondary-button">清空</button>
+          </div>
 
-        <div id="result-section">
-          <div>
-            <div>生成<ruby>结<rp>（</rp><rt>jié</rt><rp>）</rp></ruby>果</div>
-            <pre class="code-container" id="result-container">
+          <div id="result-section">
+            <div>
+              <div>
+                生成
+                <ruby>
+                  结
+                  <rp>（</rp>
+                  <rt>jié</rt>
+                  <rp>）</rp>
+                </ruby>
+                果
+              </div>
+              <pre class="code-container" id="result-container">
               <button class="copy-button nf nf-fa-copy" id="copy-button"></button>
               <div class="font" id="result-ele"></div>
             </pre>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
-  </div>
-</body>
+      </main>
+    </div>
+  </body>
 </html>

@@ -1,31 +1,34 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>音频 FFT</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>音频 FFT</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/tools/audioFFT.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script src="../js/dialogs.js"></script>
-  <script defer src="../js/tools/audioFFT.js"></script>
-</head>
-<body>
-  <div>
-    <main>
-      <div>
-        <canvas id="cvs"></canvas>
-      </div>
-      <div id="controller">
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/tools/audioFFT.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script src="../js/dialogs.js"></script>
+    <script defer src="../js/tools/audioFFT.js"></script>
+  </head>
+  <body>
+    <div>
+      <main>
         <div>
-          <audio controls></audio>
+          <canvas id="cvs"></canvas>
         </div>
-        <div>
-          <input type="file" id="sele"/>
+        <div id="controller">
+          <div>
+            <audio controls></audio>
+          </div>
+          <div>
+            <input type="file" id="sele" />
+          </div>
         </div>
-      </div>
-    </main>
-  </div>
-</body>
+      </main>
+    </div>
+  </body>
 </html>

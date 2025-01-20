@@ -1,52 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>zalog 文本生成器</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>zalog 文本生成器</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/materialInput.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css">
-  <link rel="stylesheet" href="../css/tools/zalog.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/materialInput.js"></script>
-  <script defer src="../js/tools/zalog.js"></script>
-</head>
-<body>
-  <div>
-    <main>
-      <div>
-        <div class="material-input-container">
-          <input type="text" id="input">
-          <label for="input">待转换字符</label>
-        </div>
-        <div class="opts">
-          <div id="range">
-            重叠字符数范围：
-            <div id="min-container" class="material-input-container">
-              <input value="5" type="number" id="min">
-              <label for="min">下限</label>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/materialInput.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/nerd-fonts-generated.min.css" />
+    <link rel="stylesheet" href="../css/tools/zalog.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/materialInput.js"></script>
+    <script defer src="../js/tools/zalog.js"></script>
+  </head>
+  <body>
+    <div>
+      <main>
+        <div>
+          <div class="material-input-container">
+            <input type="text" id="input" />
+            <label for="input">待转换字符</label>
+          </div>
+          <div class="opts">
+            <div id="range">
+              重叠字符数范围：
+              <div id="min-container" class="material-input-container">
+                <input value="5" type="number" id="min" />
+                <label for="min">下限</label>
+              </div>
+              ~
+              <div id="max-container" class="material-input-container">
+                <input value="10" type="number" id="max" />
+                <label for="max">上限</label>
+              </div>
             </div>
-            ~
-            <div id="max-container" class="material-input-container">
-              <input value="10" type="number" id="max">
-              <label for="max">上限</label>
+            <div class="btns">
+              <button id="gen-button" class="primary-button">生成</button>
+              <button id="copy-button" class="secondary-button">复制</button>
             </div>
           </div>
-          <div class="btns">
-            <button id="gen-button" class="primary-button">生成</button>
-            <button id="copy-button" class="secondary-button">复制</button>
+          <div class="material-input-container">
+            <input readonly type="text" id="output" />
+            <label for="input">
+              生成
+              <ruby>
+                结
+                <rp>（</rp>
+                <rt>jié</rt>
+                <rp>）</rp>
+              </ruby>
+              果
+            </label>
           </div>
         </div>
-        <div class="material-input-container">
-          <input readonly type="text" id="output">
-          <label for="input">生成<ruby>结<rp>（</rp><rt>jié</rt><rp>）</rp></ruby>果</label>
-        </div>
-      </div>
-    </main>
-  </div>
-</body>
+      </main>
+    </div>
+  </body>
 </html>

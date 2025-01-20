@@ -1,29 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>“户”加速度计</title>
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>“户”加速度计</title>
 
-  <link rel="stylesheet" href="../css/mainStyles.css">
-  <link rel="stylesheet" href="../css/refuse.css">
-  <link rel="stylesheet" href="../css/rippleButton.css">
-  <link rel="stylesheet" href="../css/tools/HuAccelerometer.css">
-  <script defer src="../js/changeHeader.js"></script>
-  <script defer src="../js/rippleButton.js"></script>
-  <script defer src="../js/iframeColorSchemeSync.js"></script>
-  <script defer src="../js/tools/HuAccelerometer.js"></script>
-</head>
-<body>
-  <svg id="frame" viewBox="0 0 113 115">
-    <path id="framePath" d="M18 0v40c0 21-2 49-18 69l9 6c16-20 19-47 19-71h85V0Zm10 10h74v24H28Z"></path>
-  </svg>
-  <svg id="hand">
-    <path id="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path>
-  </svg>
-  <span id="acceleration"></span>
-  <div>
-    <button id="togglePathButton">更换样式</button>
-    <div>缩放：<input id="scale" type="range" min="0.0001" max="10" step="0.0001" value="8.00005"><span id="scaleText">1.0000</span></div>
-  </div>
-</body>
+    <link rel="stylesheet" href="../css/mainStyles.css" />
+    <link rel="stylesheet" href="../css/refuse.css" />
+    <link rel="stylesheet" href="../css/rippleButton.css" />
+    <link rel="stylesheet" href="../css/tools/HuAccelerometer.css" />
+    <script defer src="../js/changeHeader.js"></script>
+    <script defer src="../js/rippleButton.js"></script>
+    <script defer src="../js/iframeColorSchemeSync.js"></script>
+    <script defer src="../js/tools/HuAccelerometer.js"></script>
+  </head>
+  <body>
+    <svg id="frame" viewBox="0 0 113 115">
+      <path
+        id="framePath"
+        d="M18 0v40c0 21-2 49-18 69l9 6c16-20 19-47 19-71h85V0Zm10 10h74v24H28Z"></path>
+    </svg>
+    <svg id="hand">
+      <path id="handPath" d="M 0,0 H 500 V 500 H 0 Z"></path>
+    </svg>
+    <span id="acceleration"></span>
+    <div>
+      <button id="togglePathButton">更换样式</button>
+      <div>
+        缩放：
+        <input
+          id="scale"
+          type="range"
+          min="0.0001"
+          max="10"
+          step="0.0001"
+          value="8.00005" />
+        <span id="scaleText">1.0000</span>
+      </div>
+    </div>
+  </body>
 </html>
