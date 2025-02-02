@@ -46,7 +46,7 @@
   padding-top: 19px;
   color: white;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--md-sys-color-surface-container-high);
 }
 
 .set-v2-popup-symbol {
@@ -63,7 +63,7 @@
   left: 0;
   width: 100%;
   vertical-align: bottom;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--md-sys-color-on-surface-variant);
   font-size: 14px;
   font-family: PUAExt, plgo1, plgo2, Source, ffallback;
   line-height: 1;
@@ -79,13 +79,13 @@
 
 a {
   text-decoration: none;
-  color: rgb(242, 242, 242);
+  color: var(--md-sys-color-on-background);
 }
 
 a:hover,
 button:hover,
 span.btn:hover {
-  color: #c20c24 !important;
+  color: var(--md-sys-color-error) !important;
 }
 
 @font-face {
@@ -185,7 +185,7 @@ h1,
   min-width: 30px;
   vertical-align: top;
   transition: all 0.2s ease;
-  border: 1px solid #66666666;
+  border: 1px solid var(--md-sys-color-outline);
   border-radius: 8px;
 }
 
@@ -260,8 +260,8 @@ tbody > tr:last-child > td:last-child {
 }
 
 #keyboard table th {
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-surface);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
   white-space: nowrap;
 }
 
@@ -299,9 +299,9 @@ tbody > tr:last-child > td:last-child {
   width: 17pt;
   height: 17pt;
   font-size: 12pt;
-  color: #4a90e2;
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 3px;
   padding: 1px 2px;
   margin: 0;
@@ -364,15 +364,15 @@ tbody > tr:last-child > td:last-child {
   font-size: 1.6em;
   line-height: 1;
   padding: 5px 10px;
-  background-color: #f4f4f4;
-  border-top: 1px dashed #aaa;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-top: 1px dashed var(--md-sys-color-outline);
 }
 
 #result #groups a {
-  border: 1px solid #aaa;
-  color: #333 !important;
+  border: 1px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface) !important;
   border-radius: 3px;
-  background-color: #fff;
+  background-color: var(--md-sys-color-surface);
   padding: 1px;
   margin: 2px;
   width: 1em;
@@ -404,19 +404,19 @@ tbody > tr:last-child > td:last-child {
   line-height: 1;
   padding: 10px 0;
   clear: both;
-  border-top: 1px dashed #aaa;
+  border-top: 1px dashed var(--md-sys-color-outline);
 }
 
 #result [id^='output'] a {
-  border: 1px solid #aaa;
+  border: 1px solid var(--md-sys-color-outline);
   padding: 1px;
   margin: 2px;
   width: 1em;
   display: inline-block;
   border-radius: 8px;
   overflow: hidden;
-  border-color: #00000017;
-  box-shadow: 0px 0px 6px #00000047;
+  border-color: var(--md-sys-color-outline-variant);
+  box-shadow: 0 0 6px var(--md-sys-color-outline-variant);
 }
 
 #result [id^='output'] a.img {
@@ -438,8 +438,8 @@ tbody > tr:last-child > td:last-child {
 }
 
 #result [id^='output'] > span .line.hover {
-  border-bottom: 2px solid #e08 !important;
-  color: #e08;
+  border-bottom: 2px solid var(--md-sys-color-error) !important;
+  color: var(--md-sys-color-error);
 }
 
 #result [id^='output'] > span .sub {
@@ -492,20 +492,21 @@ tbody > tr:last-child > td:last-child {
 }
 
 .K1 {
-  color: #0000aa !important;
+  color: #4b4bff !important;
 }
 .K2 {
-  color: #004d26 !important;
+  color: #0b7e44 !important;
 }
 .K3 {
-  color: #752796 !important;
+  color: #9e3cc7 !important;
 }
 .K4 {
   color: #ac3333 !important;
 }
 
 body {
-  background: #fffbfe;
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
   margin: 8px;
 }
 
@@ -584,10 +585,10 @@ button {
   padding-left: 100px;
   border: 1px solid #666;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 2px 2px #aaa;
+  background: var(--md-sys-color-surface-container-lowest);
+  box-shadow: 2px 2px var(--md-sys-color-outline);
   z-index: 10;
-  opacity: 0;
+  opacity: 0.9;
 }
 
 #popview span,
@@ -632,12 +633,11 @@ button {
   display: block;
   cursor: pointer;
   padding: 2px 5px;
-  color: #333;
 }
 
 #popview .func:hover {
-  background: #ff5b84;
-  color: #fff;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
 @media screen and (max-width: 890px) {
@@ -687,11 +687,11 @@ button {
     width: 28px;
     overflow: hidden;
     margin-right: 2px;
-    color: #000;
+    color: var(--md-sys-color-on-surface);
   }
 
   #result #legend button {
-    color: #000;
+    color: var(--md-sys-color-on-surface);
   }
 
   #sk_foot > span {

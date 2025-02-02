@@ -1,6 +1,7 @@
 import '../../css/mainStyles.css';
 import '../../css/tools/seeker.css';
 
+import '../iframeColorSchemeSync.js';
 import '../changeHeader.js';
 import '../m3ui.js';
 
@@ -8,6 +9,11 @@ import { dt, vt } from '../../data/handata_uni.js';
 import { parts } from '../../data/parts.js';
 
 const inputEle = document.getElementById('input');
+const subdivideSwitch = document.getElementById('subdivide');
+const variantSwitch = document.getElementById('variant');
+const keypadSwitch = document.getElementById('showkeypad');
+const popupSym = document.querySelector('.set-v2-popup-symbol');
+const popupEle = document.querySelector('.set-v2-popup');
 const counter = document.getElementById('counter');
 const versionEle = document.getElementById('version');
 const datasizeEle = document.getElementById('datasize');
@@ -17,13 +23,6 @@ const scKey = document.getElementById('scKey');
 const buttClear = document.getElementById('buttClear');
 const buttDecompose = document.getElementById('buttDecompose');
 const buttGo = document.getElementById('buttGo');
-
-const subdivideSwitch = document.getElementById('subdivide');
-const variantSwitch = document.getElementById('variant');
-const keypadSwitch = document.getElementById('showkeypad');
-
-const popupEle = document.querySelector('.set-v2-popup');
-const popupSym = document.querySelector('.set-v2-popup-symbol');
 
 const outputElements = {
   BSC: document.getElementById('outputBSC'),
@@ -55,8 +54,6 @@ const popviewElements = {
   menuDel: document.getElementById('menu_del')
 };
 
-const popViewVisibility = observeElementVisibility(popviewElements.popview);
-
 let animation;
 function popCopyMsg(char) {
   animation?.cancel();
@@ -74,28 +71,6 @@ function popCopyMsg(char) {
   animation.addEventListener('finish', () => {
     popupEle.style.display = 'none';
   });
-}
-
-function observeElementVisibility(element) {
-  const visibilityState = {
-    isVisible: false,
-  };
-
-  const options = {
-    threshold: 0.01,
-  };
-
-  const callback = (entries) => {
-    entries.forEach(entry => {
-      visibilityState.isVisible = entry.isIntersecting;
-    });
-  };
-
-  const observer = new IntersectionObserver(callback, options);
-
-  observer.observe(element);
-
-  return visibilityState;
 }
 
 const Config = {
@@ -705,7 +680,7 @@ const UI = {
         : window.scrollY + rect.top - UI.popviewRect.height - 5;
 
     UI.popviewAnimation?.cancel();
-    if (UI.popTrigger && popViewVisibility.isVisible) {
+    if (UI.popTrigger) {
       const rect = popviewElements.popview.getBoundingClientRect();
       UI.popviewMoveAnimation?.cancel();
       UI.popviewAnimation?.cancel();
