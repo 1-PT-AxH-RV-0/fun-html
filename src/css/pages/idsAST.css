@@ -25,8 +25,9 @@
 }
 
 :is(.idc-inputer, .curve-inputer) md-icon {
-  --md-icon-font: IDC, Plgo1, Noto-Color-Emoji, Plgo2, Noto, NotoSansSC,
-    NotoSansKR, Monu, Segoe, Microsoft, others, sans-serif, Last;
+  --md-icon-font:
+    IDC, Plgo1, Noto-Color-Emoji, Plgo2, Noto, NotoSansSC, NotoSansKR, Monu,
+    Segoe, Microsoft, others, sans-serif, Last;
 }
 
 :is(.idc-inputer, .curve-inputer):after {

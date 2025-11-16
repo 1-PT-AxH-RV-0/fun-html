@@ -4,9 +4,9 @@ import getLigaturesWorker from '@js/workers/getLigatures.worker.js';
 import processLigaturesWorker from '@js/workers/processLigatures.worker.js';
 
 import decompress from '@js/mpZlibDecompresser.js';
-import decompositionsData from '@data/mp.zlib/decompositions.mp.zlib'
-import variationsData from '@data/mp.zlib/variations.mp.zlib'
-import namedSequencesData from '@data/mp.zlib/named_sequences.mp.zlib'
+import decompositionsData from '@data/mp.zlib/decompositions.mp.zlib';
+import variationsData from '@data/mp.zlib/variations.mp.zlib';
+import namedSequencesData from '@data/mp.zlib/named_sequences.mp.zlib';
 
 const ligaturesData = [
   ...decompress(decompositionsData),

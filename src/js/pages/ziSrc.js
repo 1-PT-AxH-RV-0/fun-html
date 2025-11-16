@@ -38,12 +38,12 @@ function loadZiSrc() {
     }
     return result;
   }
-  
+
   return {
     sourceDict,
     sourceComments,
     reverseDict
-  }
+  };
 }
 
 const { sourceDict, sourceComments, reverseDict } = loadZiSrc();

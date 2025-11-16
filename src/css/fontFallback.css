@@ -72,8 +72,9 @@
 }
 
 :root {
-  --base-fonts: Plgo1, Noto-Color-Emoji, Plgo2, NotoSansSuper, Noto,
-    WenYuanSansSCVF, Sesh, NewGardiner, Monu, sans-serif, Last;
+  --base-fonts:
+    Plgo1, Noto-Color-Emoji, Plgo2, NotoSansSuper, Noto, WenYuanSansSCVF, Sesh,
+    NewGardiner, Monu, sans-serif, Last;
 }
 
 .font,
