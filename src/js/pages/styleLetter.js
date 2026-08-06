@@ -439,6 +439,15 @@ const toStyleLetter = (str, style) => {
               : char === 0x29
                 ? '₎'
                 : String.fromCodePoint(char);
+    },
+    smallCapital: char => {
+      if (0x41 <= char && char <= 0x5a) {
+        return 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ'[char - 0x41];
+      }
+      if (0x61 <= char && char <= 0x7a) {
+        return 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ'[char - 0x61];
+      }
+      return String.fromCodePoint(char);
     }
   };
   return str

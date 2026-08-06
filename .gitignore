@@ -1,5 +1,6 @@
 .babelrc
 package-lock.json
+pnpm-lock.yaml
 node_modules
 eslint.config.mjs
 .prettierignore
