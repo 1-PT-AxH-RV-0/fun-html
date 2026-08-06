@@ -6,6 +6,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const { pages, flatPages } = require('./src/data/pages.js');
 
 const pageEntries = {};
@@ -120,6 +121,18 @@ module.exports = {
   },
   plugins: [
     new WebpackBar(),
+    new CompressionPlugin({
+      test: /\.(css|js)$/,
+      algorithm: 'brotliCompress',
+      compressionOptions: {
+        params: {
+          [require('zlib').constants.BROTLI_PARAM_QUALITY]: 11  // Brotli 质量级别 0-11，11 最高
+        }
+      },
+      threshold: 1024 * 50,
+      minRatio: 0.8,
+      deleteOriginalAssets: true
+    }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css'
     }),
