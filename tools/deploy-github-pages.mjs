@@ -67,6 +67,25 @@ function build() {
 
   // Disable Jekyll processing so every generated asset is served verbatim.
   fs.writeFileSync(path.join(distDir, '.nojekyll'), '');
+  fs.writeFileSync(
+    path.join(distDir, '.gitignore'),
+    [
+      '.babelrc',
+      'package-lock.json',
+      'pnpm-lock.yaml',
+      'node_modules',
+      'eslint.config.mjs',
+      '.prettierignore',
+      '.prettierrc.json',
+      'dist',
+      '.env',
+      '.env.*',
+      '*.log',
+      '.DS_Store',
+      'Thumbs.db',
+      '',
+    ].join('\n'),
+  );
 }
 
 function getRemoteUrl() {

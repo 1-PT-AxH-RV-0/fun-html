@@ -5,5 +5,4 @@ node_modules
 eslint.config.mjs
 .prettierignore
 .prettierrc.json
-
-/dist/
+dist
