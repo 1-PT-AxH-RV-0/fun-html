@@ -203,12 +203,22 @@ downloadBtn.addEventListener('click', async () => {
     padding,
     maxWidth
   );
-  if (canvas) {
-    const link = document.createElement('a');
-    link.download = 'text-image.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
+  if (!canvas) return;
+
+  const blob = await new Promise(resolve => {
+    canvas.toBlob(resolve, 'image/png');
+  });
+
+  if (!blob) return;
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = 'text-image.png';
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 });
 
 uploadFontBtn.addEventListener('click', () => fileInput.click());
