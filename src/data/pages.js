@@ -27,7 +27,8 @@ const pages = {
     fuckToFly: '全部草飞！',
     pointMoveWithSeg: '点在移动时的连线',
     typewriter: '打字机',
-    randFuck: '随机草人器'
+    randFuck: '随机草人器',
+    chaoticCanvas: '瞎眼特效'
   }
 };
 
