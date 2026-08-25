@@ -24,7 +24,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "format": "npx eslint --fix . && npx prettier --write \"**/*.html\" && npx prettier --write \"**/*.css\"",
-    "server": "http-server ./dist --brotli -p 8270",
+    "server": "http-server ./dist --brotli -p 8270 --watch",
     "deploy:github-pages": "node ./tools/deploy-github-pages.mjs",
     "deploy:github-pages:dry": "node ./tools/deploy-github-pages.mjs --no-push"
   },
