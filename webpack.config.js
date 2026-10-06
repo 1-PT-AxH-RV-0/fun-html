@@ -1,4 +1,4 @@
-const p = 1;
+const production = process.env.BUILD_MODE === 'prod';
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -132,7 +132,7 @@ module.exports = {
       },
       threshold: 1024 * 50,
       minRatio: 0.8,
-      deleteOriginalAssets: false
+      deleteOriginalAssets: !production
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:8].css'
@@ -154,5 +154,5 @@ module.exports = {
       '@assets': path.resolve(__dirname, 'assets')
     },
   },
-  mode: p ? 'production' : 'development'
+  mode: production ? 'production' : 'development'
 };
