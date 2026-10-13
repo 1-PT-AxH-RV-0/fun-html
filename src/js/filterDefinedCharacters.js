@@ -2,29 +2,26 @@ import decompress from '@js/mpZlibDecompresser.js';
 import filterDefinedCharactersWorker from '@js/workers/filterDefinedCharacters.worker.js';
 import definedCharacterListData from '@data/mp.zlib/DefinedCharacterList.mp.zlib';
 
-const definedCharacterListPromise = decompress(definedCharacterListData)
-  .then(list => new Set(list));
+const MAX_CODEPOINT = 0x110000;
 
-async function runWorker(worker, data) {
-  return new Promise((resolve, reject) => {
-    worker.addEventListener('message', event => {
-      resolve(event.data);
-    });
+const workerReady = decompress(definedCharacterListData).then(list => {
+  const bitmap = new Uint32Array(MAX_CODEPOINT >>> 5);
+  for (const cp of list) {
+    bitmap[cp >>> 5] |= (1 << (cp & 31));
+  }
 
-    worker.addEventListener('error', error => {
-      reject(error);
-    });
-
-    worker.postMessage(data);
-  });
-}
+  const worker = new filterDefinedCharactersWorker();
+  worker.postMessage({ type: 'init', buffer: bitmap.buffer }, [bitmap.buffer]);
+  return worker;
+});
 
 async function filterDefinedCharacters(characters) {
-  const definedCharacterList = await definedCharacterListPromise;
-  const worker = new filterDefinedCharactersWorker();
-  const res = await runWorker(worker, { characters, definedCharacterList });
+  const w = await workerReady;
 
-  return res;
+  return new Promise(resolve => {
+    w.addEventListener('message', event => resolve(event.data), { once: true });
+    w.postMessage({ type: 'filter', characters });
+  });
 }
 
 export default filterDefinedCharacters;
