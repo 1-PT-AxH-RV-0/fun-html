@@ -1,12 +1,17 @@
-import { inflate } from 'pako';
 import { decode } from '@msgpack/msgpack';
 
-export default function decompress(compressedData) {
+async function inflateNative(compressed) {
+  const ds = new DecompressionStream('deflate');
+  const stream = new Blob([compressed]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+export default async function decompress(compressedData) {
   const compressedArray =
     compressedData instanceof Uint8Array
       ? compressedData
       : new Uint8Array(compressedData);
-  const decompressedData = inflate(compressedArray);
+  const decompressedData = await inflateNative(compressedArray);
 
   return decode(decompressedData);
 }
