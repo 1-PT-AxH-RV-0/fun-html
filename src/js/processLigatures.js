@@ -8,13 +8,7 @@ import decompositionsData from '@data/mp.zlib/decompositions.mp.zlib';
 import variationsData from '@data/mp.zlib/variations.mp.zlib';
 import namedSequencesData from '@data/mp.zlib/named_sequences.mp.zlib';
 
-const ligaturesData = [
-  ...decompress(decompositionsData),
-  ...decompress(variationsData),
-  ...decompress(namedSequencesData)
-];
-
-const getLigatures = async () => {
+const getLigatures = async ligaturesData => {
   return new Promise((resolve, reject) => {
     const worker = new getLigaturesWorker();
 
@@ -34,7 +28,19 @@ const getLigatures = async () => {
 };
 
 export default (async () => {
-  const { ligatures, ligatureStrings } = await getLigatures();
+  const [decompositions, variations, namedSequences] = await Promise.all([
+    decompress(decompositionsData),
+    decompress(variationsData),
+    decompress(namedSequencesData)
+  ]);
+
+  const ligaturesData = [
+    ...decompositions,
+    ...variations,
+    ...namedSequences
+  ];
+
+  const { ligatures, ligatureStrings } = await getLigatures(ligaturesData);
 
   const worker1 = new processLigaturesWorker();
   const worker2 = new processLigaturesWorker();
@@ -44,18 +50,22 @@ export default (async () => {
 
   async function processLigatures(codeArr) {
     return new Promise(resolve => {
-      worker1.addEventListener('message', event => {
+      const handler = event => {
+        worker1.removeEventListener('message', handler);
         resolve(event.data);
-      });
+      };
+      worker1.addEventListener('message', handler);
       worker1.postMessage({ type: 'processLigatures', data: codeArr });
     });
   }
 
   async function processLigaturesString(charArr) {
     return new Promise(resolve => {
-      worker2.addEventListener('message', event => {
+      const handler = event => {
+        worker2.removeEventListener('message', handler);
         resolve(event.data);
-      });
+      };
+      worker2.addEventListener('message', handler);
       worker2.postMessage({ type: 'processLigaturesString', data: charArr });
     });
   }

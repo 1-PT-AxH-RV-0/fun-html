@@ -1,4 +1,3 @@
-import { inflate } from 'pako';
 import { decode } from '@msgpack/msgpack';
 import SEEKER_CONFIG, {
   ALL_BLOCK_MASK,
@@ -43,16 +42,34 @@ function normalizeLevel(level) {
   };
 }
 
+async function inflateNative(compressed) {
+  const ds = new DecompressionStream('deflate');
+  const stream = new Blob([compressed]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
 async function initialize(databaseUrl) {
+  console.time('init: total');
+
+  console.time('init: fetch');
   const response = await fetch(databaseUrl, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Database HTTP ${response.status}`);
   const compressed = new Uint8Array(await response.arrayBuffer());
-  const db = decode(inflate(compressed));
+  console.timeEnd('init: fetch');
+
+  console.time('init: inflate');
+  const inflated = await inflateNative(compressed);
+  console.timeEnd('init: inflate');
+
+  console.time('init: msgpack decode');
+  const db = decode(inflated);
+  console.timeEnd('init: msgpack decode');
 
   if (db.schema !== SEEKER_CONFIG.database.schema) {
     throw new Error(`Unsupported Seeker database schema ${db.schema}`);
   }
 
+  console.time('init: extract typed arrays');
   metadata = db.metadata ?? {};
   characters = toU32(db.characters);
   standardWords = toU32(db.standardWords);
@@ -60,7 +77,9 @@ async function initialize(databaseUrl) {
     lv1: normalizeLevel(db.lv1),
     lv2: normalizeLevel(db.lv2)
   };
+  console.timeEnd('init: extract typed arrays');
 
+  console.time('init: blockIndexes');
   const blockIndexByKey = new Map(
     SEEKER_CONFIG.blocks.map((block, index) => [block.key, index])
   );
@@ -68,7 +87,10 @@ async function initialize(databaseUrl) {
   for (let id = 0; id < characters.length; id++) {
     blockIndexes[id] = blockIndexByKey.get(getBlockByCodePoint(characters[id]).key) ?? 0;
   }
+  console.timeEnd('init: blockIndexes');
+
   ready = true;
+  console.timeEnd('init: total');
 
   return {
     ...metadata,
