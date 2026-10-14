@@ -23,12 +23,45 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
     return arr;
   };
 
+  // 区间对象：只存首尾，避免展开成巨大数组
+  function range(start, end) {
+    return { __range: true, start, end };
+  }
+
+  function isRange(item) {
+    return item !== null && typeof item === 'object' && item.__range === true;
+  }
+
   Array.prototype.removeAll = function (value) {
     const extraEqualFunc = Array.isArray(value) ? areArraysEqual : () => false;
+    const isNumber = typeof value === 'number';
     for (let i = 0; i < this.length; i++) {
-      if (this[i] === value || extraEqualFunc(this[i], value)) {
+      const item = this[i];
+      if (item === value || extraEqualFunc(item, value)) {
         this.splice(i, 1);
         i--;
+      } else if (
+        isNumber &&
+        isRange(item) &&
+        item.start <= value &&
+        value <= item.end
+      ) {
+        // 值落在区间内，需要拆分
+        if (item.start === item.end) {
+          this.splice(i, 1);
+          i--;
+        } else if (value === item.start) {
+          this[i] = range(item.start + 1, item.end);
+        } else if (value === item.end) {
+          this[i] = range(item.start, item.end - 1);
+        } else {
+          this.splice(
+            i,
+            1,
+            range(item.start, value - 1),
+            range(value + 1, item.end)
+          );
+        }
       }
     }
     return this;
@@ -67,19 +100,19 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
     includeLowercase: 'abcdefghijklmnopqrstuvwxyz'.toArray(),
     includeUppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.toArray(),
     includeSpecialSymbols: "!'#$%&'()*+,-./:;<=>?@[]^_`{|}~".toArray(),
-    includeBsc: rangeArr(0x4e00, 0x9fff),
-    includeExtA: rangeArr(0x3400, 0x4dbf),
-    includeExtB: rangeArr(0x20000, 0x2a6df),
-    includeExtC: rangeArr(0x2a700, 0x2b73f),
-    includeExtD: rangeArr(0x2b740, 0x2b81d),
-    includeExtE: rangeArr(0x2b820, 0x2cead),
-    includeExtF: rangeArr(0x2ceb0, 0x2ebe0),
-    includeExtG: rangeArr(0x30000, 0x3134a),
-    includeExtH: rangeArr(0x31350, 0x323af),
-    includeExtI: rangeArr(0x2ebf0, 0x2ee5d),
-    includeExtJ: rangeArr(0x323b0, 0x33479),
-    includeCmp: [...rangeArr(0xf900, 0xfa6d), ...rangeArr(0xfa70, 0xfad9)],
-    includeSupCmp: rangeArr(0x2f800, 0x2fa1d)
+    includeBsc: range(0x4e00, 0x9fff),
+    includeExtA: range(0x3400, 0x4dbf),
+    includeExtB: range(0x20000, 0x2a6df),
+    includeExtC: range(0x2a700, 0x2b73f),
+    includeExtD: range(0x2b740, 0x2b81d),
+    includeExtE: range(0x2b820, 0x2cead),
+    includeExtF: range(0x2ceb0, 0x2ebe0),
+    includeExtG: range(0x30000, 0x3134a),
+    includeExtH: range(0x31350, 0x323af),
+    includeExtI: range(0x2ebf0, 0x2ee5d),
+    includeExtJ: range(0x323b0, 0x33479),
+    includeCmp: [range(0xf900, 0xfa6d), range(0xfa70, 0xfad9)],
+    includeSupCmp: range(0x2f800, 0x2fa1d)
   };
   const dom = {};
 
@@ -158,9 +191,14 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
     characterSets.includeCustomChar = await processLigatures(
       customCharEle.value.toArray()
     );
+    
     for (const option in options) {
-      if (options[option] && characterSets[option]) {
-        characters.push(...characterSets[option]);
+      const set = options[option] && characterSets[option];
+      if (!set) continue;
+      if (Array.isArray(set)) {
+        characters.push(...set);
+      } else if (isRange(set)) {
+        characters.push(set);
       }
     }
 
@@ -170,15 +208,15 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
           'md-outlined-text-field'
         );
         if (inpu.value && inpu2.value)
-          characters = characters.concat(
-            rangeArr(parseInt(inpu.value, 16), parseInt(inpu2.value, 16))
+          characters.push(
+            range(parseInt(inpu.value, 16), parseInt(inpu2.value, 16))
           );
       });
     }
 
     if (options.includeCustomUnicodeBlocks) {
       for (let selectedBlock of selectedBlocks) {
-        characters = characters.concat(rangeArr(...selectedBlock));
+        characters.push(range(...selectedBlock));
       }
     }
 
@@ -193,7 +231,9 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
     } else if (!options.noRepeat) {
       for (let i = 0; i < count; i++) {
         const code = characters[getRandomNumber(0, characters.length - 1)];
-        if (Array.isArray(code)) {
+        if (isRange(code)) {
+          result += String.fromCodePoint(getRandomNumber(code.start, code.end));
+        } else if (Array.isArray(code)) {
           result += code.map(c => String.fromCodePoint(c)).join('');
         } else {
           result += String.fromCodePoint(code);
@@ -201,21 +241,23 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
       }
     } else {
       for (let i = 0; i < count && characters.length; i++) {
-        const code = characters[getRandomNumber(0, characters.length - 1)];
-        if (Array.isArray(code)) {
+        const idx = getRandomNumber(0, characters.length - 1);
+        const code = characters[idx];
+        if (isRange(code)) {
+          const cp = getRandomNumber(code.start, code.end);
+          result += String.fromCodePoint(cp);
+          characters.removeAll(cp);
+        } else if (Array.isArray(code)) {
           result += code.map(c => String.fromCodePoint(c)).join('');
+          characters.removeAll(code);
         } else {
           result += String.fromCodePoint(code);
+          characters.removeAll(code);
         }
-        characters.removeAll(code);
       }
     }
 
     return result;
-  }
-
-  function rangeArr(start, end) {
-    return new Array(end - start + 1).fill(0).map((_, i) => i + start);
   }
 
   function getRandomNumber(min, max) {
