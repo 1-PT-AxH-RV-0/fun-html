@@ -1,4 +1,3 @@
-import { inflate } from 'pako';
 import { decode } from '@msgpack/msgpack';
 
 const DB_SCHEMA = 1;
@@ -16,11 +15,17 @@ let reverseIds = new Uint32Array();
 const toU32 = value =>
   value instanceof Uint32Array ? value : Uint32Array.from(value ?? []);
 
+async function inflateNative(compressed) {
+  const ds = new DecompressionStream('deflate');
+  const stream = new Blob([compressed]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
 async function initialize(databaseUrl) {
   const response = await fetch(databaseUrl, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Database HTTP ${response.status}`);
   const compressed = new Uint8Array(await response.arrayBuffer());
-  const db = decode(inflate(compressed));
+  const db = decode(await inflateNative(compressed));
   if (db.schema !== DB_SCHEMA) {
     throw new Error(`Unsupported ziSrc database schema ${db.schema}`);
   }
