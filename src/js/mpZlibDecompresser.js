@@ -1,4 +1,4 @@
-import { decode } from '@msgpack/msgpack';
+import { unpack } from 'msgpackr';
 
 async function inflateNative(compressed) {
   const ds = new DecompressionStream('deflate');
@@ -13,5 +13,5 @@ export default async function decompress(compressedData) {
       : new Uint8Array(compressedData);
   const decompressedData = await inflateNative(compressedArray);
 
-  return decode(decompressedData);
+  return unpack(decompressedData);
 }

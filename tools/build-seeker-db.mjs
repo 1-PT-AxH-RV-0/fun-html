@@ -3,7 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { inflateSync, deflateSync } from 'node:zlib';
-import { decode, encode } from '@msgpack/msgpack';
+import { pack, unpack } from 'msgpackr';
 import HAN_DATA_CONFIG from './han-data.config.mjs';
 
 const DEFAULT_COMMIT = HAN_DATA_CONFIG.ids.commit;
@@ -481,7 +481,7 @@ function loadStandard8105() {
 
   log('Migrating legacy 8105 list into src/data/seeker/standard-8105.txt');
   const compressed = fs.readFileSync(legacyStandardFile);
-  const decoded = decode(inflateSync(compressed));
+  const decoded = unpack(inflateSync(compressed));
   const chars = Array.from(decoded, value => Array.from(String(value))[0]).filter(Boolean);
   chars.sort(compareCodePointStrings);
   ensureDir(standardTextFile);
@@ -627,7 +627,7 @@ export async function buildSeekerDatabase() {
   };
 
   log('Encoding MessagePack + zlib…');
-  const packed = encode(db);
+  const packed = pack(db);
   const compressed = deflateSync(packed, { level: 9 });
 
   ensureDir(outputFile);

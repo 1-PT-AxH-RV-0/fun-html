@@ -1,4 +1,4 @@
-import { decode } from '@msgpack/msgpack';
+import { unpack } from 'msgpackr';
 import SEEKER_CONFIG, {
   ALL_BLOCK_MASK,
   BLOCK_BY_MARKER,
@@ -52,7 +52,7 @@ async function initialize(databaseUrl) {
   const response = await fetch(databaseUrl, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Database HTTP ${response.status}`);
   const compressed = new Uint8Array(await response.arrayBuffer());
-  const db = decode(await inflateNative(compressed));
+  const db = unpack(await inflateNative(compressed));
 
   if (db.schema !== SEEKER_CONFIG.database.schema) {
     throw new Error(`Unsupported Seeker database schema ${db.schema}`);

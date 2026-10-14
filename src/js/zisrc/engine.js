@@ -1,4 +1,4 @@
-import { decode } from '@msgpack/msgpack';
+import { unpack } from 'msgpackr';
 
 const DB_SCHEMA = 1;
 let ready = false;
@@ -25,7 +25,7 @@ async function initialize(databaseUrl) {
   const response = await fetch(databaseUrl, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Database HTTP ${response.status}`);
   const compressed = new Uint8Array(await response.arrayBuffer());
-  const db = decode(await inflateNative(compressed));
+  const db = unpack(await inflateNative(compressed));
   if (db.schema !== DB_SCHEMA) {
     throw new Error(`Unsupported ziSrc database schema ${db.schema}`);
   }

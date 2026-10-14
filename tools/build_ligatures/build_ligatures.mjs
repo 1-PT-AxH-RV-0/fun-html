@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 import { deflate } from 'node:zlib';
-import { encode } from '@msgpack/msgpack';
+import { pack } from 'msgpackr';
 
 const deflateAsync = promisify(deflate);
 
@@ -63,7 +63,7 @@ function buildLigatures(...sources) {
 
 // ---- 4. msgpack → deflate ----
 async function packToMpZlib(value) {
-  const packed = encode(value);
+  const packed = pack(value);
   return deflateAsync(packed, { level: 9 });
 }
 

@@ -3,7 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { deflateSync, inflateRawSync } from 'node:zlib';
-import { encode } from '@msgpack/msgpack';
+import { pack } from 'msgpackr';
 import HAN_DATA_CONFIG from './han-data.config.mjs';
 
 const DB_SCHEMA = 1;
@@ -288,7 +288,7 @@ export async function buildZiSrcDatabase() {
   };
 
   log('Encoding ziSrc MessagePack + zlib…');
-  const compressed = deflateSync(encode(db), { level: 9 });
+  const compressed = deflateSync(pack(db), { level: 9 });
   ensureDir(outputFile);
   fs.writeFileSync(outputFile, compressed);
   ensureDir(metadataFile);

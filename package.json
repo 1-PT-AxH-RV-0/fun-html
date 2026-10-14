@@ -38,6 +38,7 @@
     "highlight.js": "^11.11.1",
     "lit": "^3.3.3",
     "mini-css-extract-plugin": "^2.10.2",
+    "msgpackr": "^2.1.0",
     "regenerate-unicode-properties": "^10.2.2",
     "tslib": "^2.8.1"
   }
