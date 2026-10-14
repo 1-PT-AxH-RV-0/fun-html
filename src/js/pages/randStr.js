@@ -208,7 +208,7 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
           'md-outlined-text-field'
         );
         if (inpu.value && inpu2.value)
-          characters = characters.concat(
+          characters.push(
             range(parseInt(inpu.value, 16), parseInt(inpu2.value, 16))
           );
       });
@@ -216,7 +216,7 @@ import filterDefinedCharacters from '@js/filterDefinedCharacters.js';
 
     if (options.includeCustomUnicodeBlocks) {
       for (let selectedBlock of selectedBlocks) {
-        characters = characters.concat(range(...selectedBlock));
+        characters.push(range(...selectedBlock));
       }
     }
 
