@@ -55,6 +55,9 @@ const state = {
   keyboardBuilt: false
 };
 
+let menuAnimation = null;
+let toastAnimation = null;
+
 function getStored(key, fallback = '0') {
   return localStorage.getItem(key) ?? fallback;
 }
@@ -527,17 +530,61 @@ async function copyText(text) {
   }
 
   clearTimeout(state.toastTimer);
+  toastAnimation?.cancel();
   elements.copyToastChar.textContent = text;
   elements.copyToast.hidden = false;
-  state.toastTimer = setTimeout(() => {
+
+  if (prefersReducedMotion()) {
+    state.toastTimer = setTimeout(() => {
+      elements.copyToast.hidden = true;
+    }, SEEKER_CONFIG.ui.toastDurationMs);
+    return;
+  }
+
+  const animation = elements.copyToast.animate(
+    [
+      { opacity: 0, transform: 'translate(-50%, 8px)' },
+      { opacity: 1, transform: 'translate(-50%, 0)', offset: 0.15 },
+      { opacity: 1, transform: 'translate(-50%, 0)', offset: 0.8 },
+      { opacity: 0, transform: 'translate(-50%, 0)' }
+    ],
+    { duration: SEEKER_CONFIG.ui.toastDurationMs, easing: 'ease' }
+  );
+  toastAnimation = animation;
+  animation.onfinish = () => {
+    if (toastAnimation !== animation) return;
     elements.copyToast.hidden = true;
-  }, SEEKER_CONFIG.ui.toastDurationMs);
+    toastAnimation = null;
+  };
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 function hideCharMenu() {
   clearTimeout(state.menuHideTimer);
-  elements.charMenu.hidden = true;
+  if (elements.charMenu.hidden || state.menuAnchor === null) return;
+
+  const currentOpacity = getComputedStyle(elements.charMenu).opacity;
   state.menuAnchor = null;
+  menuAnimation?.cancel();
+
+  if (prefersReducedMotion()) {
+    elements.charMenu.hidden = true;
+    return;
+  }
+
+  const animation = elements.charMenu.animate(
+    [{ opacity: currentOpacity }, { opacity: 0 }],
+    { duration: 300, easing: 'ease' }
+  );
+  menuAnimation = animation;
+  animation.onfinish = () => {
+    if (menuAnimation !== animation) return;
+    elements.charMenu.hidden = true;
+    menuAnimation = null;
+  };
 }
 
 function scheduleHideCharMenu() {
@@ -551,6 +598,18 @@ function scheduleHideCharMenu() {
 function showCharMenu(anchor, char) {
   if (!anchor || !char) return;
   clearTimeout(state.menuHideTimer);
+  if (
+    !elements.charMenu.hidden &&
+    state.menuAnchor === anchor &&
+    state.menuChar === char
+  ) return;
+
+  const previousAnchor = state.menuAnchor;
+  const wasVisible = !elements.charMenu.hidden;
+  const previousRect = wasVisible
+    ? elements.charMenu.getBoundingClientRect()
+    : null;
+  menuAnimation?.cancel();
 
   state.menuAnchor = anchor;
   state.menuChar = char;
@@ -583,8 +642,38 @@ function showCharMenu(anchor, char) {
     top = anchorRect.top - menuRect.height - margin;
   }
 
-  elements.charMenu.style.left = `${Math.max(margin, left)}px`;
-  elements.charMenu.style.top = `${Math.max(margin, top)}px`;
+  left = Math.max(margin, left);
+  top = Math.max(margin, top);
+  elements.charMenu.style.left = `${left}px`;
+  elements.charMenu.style.top = `${top}px`;
+
+  if (prefersReducedMotion()) return;
+
+  let frames = null;
+  if (wasVisible && previousAnchor && previousAnchor !== anchor) {
+    frames = [
+      {
+        transform: `translate(${previousRect.left - left}px, ${previousRect.top - top}px)`
+      },
+      { transform: 'translate(0, 0)' }
+    ];
+  } else if (!wasVisible || !previousAnchor) {
+    frames = [
+      { opacity: 0, transform: 'translateY(6px)' },
+      { opacity: 1, transform: 'translateY(0)' }
+    ];
+  }
+
+  if (frames) {
+    const animation = elements.charMenu.animate(frames, {
+      duration: 300,
+      easing: 'ease'
+    });
+    menuAnimation = animation;
+    animation.onfinish = () => {
+      if (menuAnimation === animation) menuAnimation = null;
+    };
+  }
 }
 
 function setExcludedChar(char) {
@@ -720,6 +809,14 @@ function bindEvents() {
   elements.charMenu.addEventListener('click', event => {
     const action = event.target.closest?.('[data-action]')?.dataset.action;
     if (action) handleCharMenuAction(action);
+  });
+
+  document.addEventListener('pointerdown', event => {
+    if (
+      elements.charMenu.contains(event.target) ||
+      event.target.closest?.('[data-char]')
+    ) return;
+    hideCharMenu();
   });
 
   window.addEventListener('resize', hideCharMenu);
