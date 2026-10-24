@@ -63,9 +63,23 @@ let lastPointerX = null;
 let lastPointerY = null;
 
 // Native anchor positioning follows scrolling in the layout engine (no JS measuring).
-const supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
+let supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
   window.CSS.supports('top', 'anchor(bottom)') &&
   window.CSS.supports('position-try-fallbacks', '--seeker-menu-above');
+
+// getBoundingClientRect uses layout-viewport coordinates, including visualViewport offsets.
+function getCharMenuViewport() {
+  const view = window.visualViewport;
+  const top = view?.offsetTop ?? 0;
+  return { top, bottom: top + (view?.height ?? window.innerHeight) };
+}
+
+// Some mobile browsers parse anchor-positioning CSS but do not apply fallbacks
+// correctly. Fall back to explicit placement only if that is observed.
+function useLegacyMenuPositioning() {
+  supportsNativeAnchor = false;
+  releaseNativeMenuAnchor();
+}
 
 // Observe the popup once, not the selected character.
 // Ignore notifications queued during a previous open/close cycle.
@@ -78,11 +92,31 @@ const menuAnchorObserver = new IntersectionObserver(entries => {
       state.menuAnchor === null ||
       entry.time < menuShownAt
     ) continue;
+    // When the native fallback fails during scrolling, recover once instead
+    // of leaving the menu clipped. Modern browsers still do zero scroll-time
+    // JS positioning work in the normal path.
+    if (supportsNativeAnchor && entry.intersectionRatio < 0.99 &&
+        state.menuAnchor.isConnected) {
+      const rect = entry.boundingClientRect;
+      const anchorRect = state.menuAnchor.getBoundingClientRect();
+      const { top, bottom } = getCharMenuViewport();
+      const roomBelow = bottom - anchorRect.bottom - 8;
+      const roomAbove = anchorRect.top - top - 8;
+      const wrongBelow = rect.bottom > bottom - 8 && roomAbove > roomBelow;
+      const wrongAbove = rect.top < top + 8 && roomBelow > roomAbove;
+
+      if (wrongBelow || wrongAbove) {
+        useLegacyMenuPositioning();
+        if (!positionCharMenu()) hideCharMenu();
+        continue;
+      }
+    }
+
     if (!entry.isIntersecting || entry.intersectionRatio < 0.01) {
       hideCharMenu();
     }
   }
-}, { threshold: 0.01 });
+}, { threshold: [0, 0.01, 0.99] });
 
 function releaseNativeMenuAnchor() {
   activeNativeAnchor?.classList.remove('char-menu-anchor');
@@ -647,23 +681,36 @@ function scheduleHideCharMenu() {
 function positionCharMenu(anchor = state.menuAnchor) {
   if (!anchor?.isConnected) return null;
 
-  // Called once on show in Chromium/Edge; scroll and resize require no JS rect reads.
-  if (supportsNativeAnchor) return elements.charMenu.getBoundingClientRect();
-
-  const menuRect = elements.charMenu.getBoundingClientRect();
+  let menuRect = elements.charMenu.getBoundingClientRect();
   const anchorRect = anchor.getBoundingClientRect();
   const margin = 8;
-  let left = anchorRect.left;
-  let top = anchorRect.bottom + margin;
+  const { top: viewTop, bottom: viewBottom } = getCharMenuViewport();
+  const roomBelow = viewBottom - anchorRect.bottom - margin;
+  const roomAbove = anchorRect.top - viewTop - margin;
+  if (anchorRect.bottom <= viewTop || anchorRect.top >= viewBottom) return null;
+  const shouldBeAbove = roomBelow < menuRect.height && roomAbove > roomBelow;
 
-  if (top + menuRect.height > window.innerHeight - margin) {
-    top = anchorRect.top - menuRect.height - margin;
+  // Verify the actual result once when the popup opens. CSS.supports()
+  // checks syntax support, not whether the browser implements try-fallbacks.
+  if (supportsNativeAnchor) {
+    const placedAbove = menuRect.bottom <= anchorRect.top;
+    const wrongSide = shouldBeAbove
+      ? !placedAbove && roomAbove >= menuRect.height
+      : placedAbove && roomBelow >= menuRect.height;
+    if (!wrongSide) return menuRect;
+    useLegacyMenuPositioning();
+    menuRect = elements.charMenu.getBoundingClientRect();
   }
 
+  // Legacy showPop policy: below when it fits, otherwise use the side with
+  // more space; reevaluate on scrolling so it can flip in BOTH directions.
   const maxLeft = Math.max(margin, window.innerWidth - menuRect.width - margin);
-  const maxTop = Math.max(margin, window.innerHeight - menuRect.height - margin);
-  left = Math.max(margin, Math.min(left, maxLeft));
-  top = Math.max(margin, Math.min(top, maxTop));
+  const maxTop = Math.max(viewTop + margin, viewBottom - menuRect.height - margin);
+  const left = Math.max(margin, Math.min(anchorRect.left, maxLeft));
+  const preferredTop = shouldBeAbove
+    ? anchorRect.top - menuRect.height - margin
+    : anchorRect.bottom + margin;
+  const top = Math.max(viewTop + margin, Math.min(preferredTop, maxTop));
   elements.charMenu.style.left = `${left}px`;
   elements.charMenu.style.top = `${top}px`;
   return { left, top };
@@ -910,7 +957,13 @@ function bindEvents() {
     hideCharMenu();
   });
 
-  if (!supportsNativeAnchor) window.addEventListener('resize', scheduleCharMenuPositionUpdate);
+  // The runtime probe may disable native anchoring after initialization.
+  window.addEventListener('resize', () => {
+    if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
+  });
+  window.visualViewport?.addEventListener('resize', () => {
+    if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
+  });
   window.addEventListener('scroll', onCharMenuScroll, {
     capture: true,
     passive: true
