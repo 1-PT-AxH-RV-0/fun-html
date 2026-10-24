@@ -897,7 +897,7 @@ function bindEvents() {
     passive: true
   });
 
-  document.addEventListener('pointerdown', event => {
+  document.addEventListener('click', event => {
     if (
       elements.charMenu.contains(event.target) ||
       event.target.closest?.('[data-char]')
