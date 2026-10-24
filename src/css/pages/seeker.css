@@ -478,6 +478,7 @@ body {
   left: clamp(8px, anchor(left), calc(100vw - min(230px, 100vw - 20px) - 8px));
   top: calc(anchor(bottom) + 8px);
   position-try-fallbacks: flip-block;
+  position-try-order: most-height;
 }
 
 .char-preview {
@@ -578,6 +579,13 @@ body {
 }
 
 @media (max-width: 780px) {
+  /* On touch-sized layouts, stay clear of the fixed bottom navigation. */
+  .char-menu.char-menu-anchored {
+    top: auto;
+    bottom: calc(anchor(top) + 8px);
+    position-try-order: normal;
+  }
+
   .seeker-shell {
     padding: 10px;
   }

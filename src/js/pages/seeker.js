@@ -66,14 +66,22 @@ let lastPointerY = null;
 const supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
   window.CSS.supports('top', 'anchor(bottom)');
 
+// Observe the popup once, not the selected character.
+// Ignore notifications queued during a previous open/close cycle.
+let menuShownAt = -Infinity;
 const menuAnchorObserver = new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.target === state.menuAnchor && !entry.isIntersecting) {
-      // Only the character leaving its scrollport should dismiss the popup.
+    if (
+      entry.target !== elements.charMenu ||
+      elements.charMenu.hidden ||
+      state.menuAnchor === null ||
+      entry.time < menuShownAt
+    ) continue;
+    if (!entry.isIntersecting || entry.intersectionRatio < 0.01) {
       hideCharMenu();
     }
   }
-}, { threshold: 0 });
+}, { threshold: 0.01 });
 
 function releaseNativeMenuAnchor() {
   activeNativeAnchor?.classList.remove('char-menu-anchor');
@@ -600,7 +608,6 @@ function hideCharMenu() {
   clearTimeout(state.menuHideTimer);
   if (elements.charMenu.hidden || state.menuAnchor === null) return;
 
-  menuAnchorObserver.disconnect();
   if (menuLayoutFrame) {
     cancelAnimationFrame(menuLayoutFrame);
     menuLayoutFrame = 0;
@@ -694,8 +701,6 @@ function showCharMenu(anchor, char) {
     : null;
   menuAnimation?.cancel();
 
-  menuAnchorObserver.disconnect();
-  menuAnchorObserver.takeRecords();
   state.menuAnchor = anchor;
   setNativeMenuAnchor(anchor);
   state.menuChar = char;
@@ -713,6 +718,7 @@ function showCharMenu(anchor, char) {
   );
   updateFavoriteAction();
 
+  menuShownAt = performance.now();
   elements.charMenu.hidden = false;
   const position = positionCharMenu(anchor);
   if (!position) {
@@ -720,8 +726,6 @@ function showCharMenu(anchor, char) {
     return;
   }
   const { left, top } = position;
-
-  menuAnchorObserver.observe(anchor);
 
   if (prefersReducedMotion()) return;
 
@@ -955,6 +959,7 @@ function init() {
   restoreSettings();
   loadShortcuts();
   bindEvents();
+  menuAnchorObserver.observe(elements.charMenu);
   initReadyState();
 }
 
