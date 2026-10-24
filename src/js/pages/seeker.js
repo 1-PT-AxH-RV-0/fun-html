@@ -58,45 +58,37 @@ const state = {
 let menuAnimation = null;
 let toastAnimation = null;
 let menuLayoutFrame = 0;
-let lastScrollAt = -Infinity;
-let lastPointerMoveAt = -Infinity;
+let activeNativeAnchor = null;
 let lastPointerX = null;
 let lastPointerY = null;
 
-const menuVisibilityState = { isVisible: false };
+// Native anchor positioning follows scrolling in the layout engine (no JS measuring).
+const supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
+  window.CSS.supports('top', 'anchor(bottom)');
 
 const menuAnchorObserver = new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (
-      entry.target === state.menuAnchor &&
-      (!entry.isIntersecting || entry.intersectionRatio === 0)
-    ) {
+    if (entry.target === state.menuAnchor && !entry.isIntersecting) {
+      // Only the character leaving its scrollport should dismiss the popup.
       hideCharMenu();
     }
   }
 }, { threshold: 0 });
 
-const menuVisibilityObserver = new IntersectionObserver(entries => {
-  for (const entry of entries) {
-    if (entry.target !== elements.charMenu) continue;
+function releaseNativeMenuAnchor() {
+  activeNativeAnchor?.classList.remove('char-menu-anchor');
+  activeNativeAnchor = null;
+  elements.charMenu.classList.remove('char-menu-anchored');
+}
 
-    menuVisibilityState.isVisible =
-      entry.isIntersecting && entry.intersectionRatio >= 0.01;
-
-    if (
-      state.menuAnchor !== null &&
-      !elements.charMenu.hidden &&
-      !menuVisibilityState.isVisible
-    ) {
-      hideCharMenu();
-    }
-  }
-}, { threshold: 0.01 });
-
-function isScrollInducedPointerBoundary(event) {
-  const pointerMoved = lastPointerX !== null &&
-    (event.clientX !== lastPointerX || event.clientY !== lastPointerY);
-  return lastScrollAt > lastPointerMoveAt && !pointerMoved;
+function setNativeMenuAnchor(anchor) {
+  if (!supportsNativeAnchor) return;
+  if (activeNativeAnchor !== anchor) releaseNativeMenuAnchor();
+  activeNativeAnchor = anchor;
+  anchor.classList.add('char-menu-anchor');
+  elements.charMenu.classList.add('char-menu-anchored');
+  elements.charMenu.style.left = '';
+  elements.charMenu.style.top = '';
 }
 
 function getStored(key, fallback = '0') {
@@ -609,9 +601,6 @@ function hideCharMenu() {
   if (elements.charMenu.hidden || state.menuAnchor === null) return;
 
   menuAnchorObserver.disconnect();
-  menuVisibilityObserver.disconnect();
-  menuVisibilityObserver.takeRecords();
-  menuVisibilityState.isVisible = false;
   if (menuLayoutFrame) {
     cancelAnimationFrame(menuLayoutFrame);
     menuLayoutFrame = 0;
@@ -622,6 +611,7 @@ function hideCharMenu() {
 
   if (prefersReducedMotion()) {
     elements.charMenu.hidden = true;
+    releaseNativeMenuAnchor();
     return;
   }
 
@@ -634,6 +624,7 @@ function hideCharMenu() {
     if (menuAnimation !== animation) return;
     elements.charMenu.hidden = true;
     menuAnimation = null;
+    releaseNativeMenuAnchor();
   };
 }
 
@@ -647,6 +638,9 @@ function scheduleHideCharMenu() {
 
 function positionCharMenu(anchor = state.menuAnchor) {
   if (!anchor?.isConnected) return null;
+
+  // Called once on show in Chromium/Edge; scroll and resize require no JS rect reads.
+  if (supportsNativeAnchor) return elements.charMenu.getBoundingClientRect();
 
   const menuRect = elements.charMenu.getBoundingClientRect();
   const anchorRect = anchor.getBoundingClientRect();
@@ -679,8 +673,9 @@ function scheduleCharMenuPositionUpdate() {
 }
 
 function onCharMenuScroll() {
-  lastScrollAt = performance.now();
-  scheduleCharMenuPositionUpdate();
+  // Scroll never closes a still-visible popup. Cancel pointer-exit timers.
+  clearTimeout(state.menuHideTimer);
+  if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
 }
 
 function showCharMenu(anchor, char) {
@@ -693,17 +688,16 @@ function showCharMenu(anchor, char) {
   ) return;
 
   const previousAnchor = state.menuAnchor;
-  const wasVisible = !elements.charMenu.hidden && menuVisibilityState.isVisible;
+  const wasVisible = !elements.charMenu.hidden;
   const previousRect = wasVisible
     ? elements.charMenu.getBoundingClientRect()
     : null;
   menuAnimation?.cancel();
 
   menuAnchorObserver.disconnect();
-  menuVisibilityObserver.disconnect();
-  menuVisibilityObserver.takeRecords();
-  menuVisibilityState.isVisible = false;
+  menuAnchorObserver.takeRecords();
   state.menuAnchor = anchor;
+  setNativeMenuAnchor(anchor);
   state.menuChar = char;
 
   const unicode = char.codePointAt(0);
@@ -728,7 +722,6 @@ function showCharMenu(anchor, char) {
   const { left, top } = position;
 
   menuAnchorObserver.observe(anchor);
-  menuVisibilityObserver.observe(elements.charMenu);
 
   if (prefersReducedMotion()) return;
 
@@ -788,21 +781,25 @@ function closestCharTarget(event) {
   return target;
 }
 
-function bindCharSurface(container, clickAction) {
-  container.addEventListener('pointerover', event => {
-    if (isScrollInducedPointerBoundary(event)) return;
-    const target = closestCharTarget(event);
-    if (target) showCharMenu(target, target.dataset.char);
-  });
+// pointerover/out may fire with a stationary mouse when scrolling moves elements.
+// Only real coordinate-changing pointer movement controls hover/open/close.
+function onCharMenuPointerMove(event) {
+  if (event.pointerType === 'touch') return;
+  if (event.clientX === lastPointerX && event.clientY === lastPointerY) return;
+  lastPointerX = event.clientX;
+  lastPointerY = event.clientY;
 
-  container.addEventListener('pointerout', event => {
-    const target = closestCharTarget(event);
-    if (!target) return;
-    if (elements.charMenu.contains(event.relatedTarget)) return;
-    if (isScrollInducedPointerBoundary(event)) return;
+  const target = closestCharTarget(event);
+  if (target) {
+    showCharMenu(target, target.dataset.char);
+  } else if (elements.charMenu.contains(event.target)) {
+    clearTimeout(state.menuHideTimer);
+  } else if (state.menuAnchor !== null) {
     scheduleHideCharMenu();
-  });
+  }
+}
 
+function bindCharSurface(container, clickAction) {
   container.addEventListener('click', event => {
     const target = closestCharTarget(event);
     if (!target) return;
@@ -890,19 +887,12 @@ function bindEvents() {
   elements.charMenu.addEventListener('pointerenter', () => {
     clearTimeout(state.menuHideTimer);
   });
-  elements.charMenu.addEventListener('pointerleave', event => {
-    if (!isScrollInducedPointerBoundary(event)) scheduleHideCharMenu();
-  });
   elements.charMenu.addEventListener('click', event => {
     const action = event.target.closest?.('[data-action]')?.dataset.action;
     if (action) handleCharMenuAction(action);
   });
 
-  document.addEventListener('pointermove', event => {
-    lastPointerMoveAt = performance.now();
-    lastPointerX = event.clientX;
-    lastPointerY = event.clientY;
-  }, {
+  document.addEventListener('pointermove', onCharMenuPointerMove, {
     capture: true,
     passive: true
   });
@@ -915,7 +905,7 @@ function bindEvents() {
     hideCharMenu();
   });
 
-  window.addEventListener('resize', scheduleCharMenuPositionUpdate);
+  if (!supportsNativeAnchor) window.addEventListener('resize', scheduleCharMenuPositionUpdate);
   window.addEventListener('scroll', onCharMenuScroll, {
     capture: true,
     passive: true
