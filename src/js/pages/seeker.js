@@ -57,6 +57,47 @@ const state = {
 
 let menuAnimation = null;
 let toastAnimation = null;
+let menuLayoutFrame = 0;
+let lastScrollAt = -Infinity;
+let lastPointerMoveAt = -Infinity;
+let lastPointerX = null;
+let lastPointerY = null;
+
+const menuVisibilityState = { isVisible: false };
+
+const menuAnchorObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (
+      entry.target === state.menuAnchor &&
+      (!entry.isIntersecting || entry.intersectionRatio === 0)
+    ) {
+      hideCharMenu();
+    }
+  }
+}, { threshold: 0 });
+
+const menuVisibilityObserver = new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    if (entry.target !== elements.charMenu) continue;
+
+    menuVisibilityState.isVisible =
+      entry.isIntersecting && entry.intersectionRatio >= 0.01;
+
+    if (
+      state.menuAnchor !== null &&
+      !elements.charMenu.hidden &&
+      !menuVisibilityState.isVisible
+    ) {
+      hideCharMenu();
+    }
+  }
+}, { threshold: 0.01 });
+
+function isScrollInducedPointerBoundary(event) {
+  const pointerMoved = lastPointerX !== null &&
+    (event.clientX !== lastPointerX || event.clientY !== lastPointerY);
+  return lastScrollAt > lastPointerMoveAt && !pointerMoved;
+}
 
 function getStored(key, fallback = '0') {
   return localStorage.getItem(key) ?? fallback;
@@ -126,6 +167,7 @@ function replaceQuery(text) {
 }
 
 function clearResults() {
+  hideCharMenu();
   elements.treeResult.hidden = true;
   elements.treeResult.replaceChildren();
 
@@ -566,6 +608,14 @@ function hideCharMenu() {
   clearTimeout(state.menuHideTimer);
   if (elements.charMenu.hidden || state.menuAnchor === null) return;
 
+  menuAnchorObserver.disconnect();
+  menuVisibilityObserver.disconnect();
+  menuVisibilityObserver.takeRecords();
+  menuVisibilityState.isVisible = false;
+  if (menuLayoutFrame) {
+    cancelAnimationFrame(menuLayoutFrame);
+    menuLayoutFrame = 0;
+  }
   const currentOpacity = getComputedStyle(elements.charMenu).opacity;
   state.menuAnchor = null;
   menuAnimation?.cancel();
@@ -595,6 +645,44 @@ function scheduleHideCharMenu() {
   );
 }
 
+function positionCharMenu(anchor = state.menuAnchor) {
+  if (!anchor?.isConnected) return null;
+
+  const menuRect = elements.charMenu.getBoundingClientRect();
+  const anchorRect = anchor.getBoundingClientRect();
+  const margin = 8;
+  let left = anchorRect.left;
+  let top = anchorRect.bottom + margin;
+
+  if (top + menuRect.height > window.innerHeight - margin) {
+    top = anchorRect.top - menuRect.height - margin;
+  }
+
+  const maxLeft = Math.max(margin, window.innerWidth - menuRect.width - margin);
+  const maxTop = Math.max(margin, window.innerHeight - menuRect.height - margin);
+  left = Math.max(margin, Math.min(left, maxLeft));
+  top = Math.max(margin, Math.min(top, maxTop));
+  elements.charMenu.style.left = `${left}px`;
+  elements.charMenu.style.top = `${top}px`;
+  return { left, top };
+}
+
+function scheduleCharMenuPositionUpdate() {
+  clearTimeout(state.menuHideTimer);
+  if (!state.menuAnchor || menuLayoutFrame) return;
+
+  menuLayoutFrame = requestAnimationFrame(() => {
+    menuLayoutFrame = 0;
+    if (!state.menuAnchor) return;
+    if (!positionCharMenu()) hideCharMenu();
+  });
+}
+
+function onCharMenuScroll() {
+  lastScrollAt = performance.now();
+  scheduleCharMenuPositionUpdate();
+}
+
 function showCharMenu(anchor, char) {
   if (!anchor || !char) return;
   clearTimeout(state.menuHideTimer);
@@ -605,12 +693,16 @@ function showCharMenu(anchor, char) {
   ) return;
 
   const previousAnchor = state.menuAnchor;
-  const wasVisible = !elements.charMenu.hidden;
+  const wasVisible = !elements.charMenu.hidden && menuVisibilityState.isVisible;
   const previousRect = wasVisible
     ? elements.charMenu.getBoundingClientRect()
     : null;
   menuAnimation?.cancel();
 
+  menuAnchorObserver.disconnect();
+  menuVisibilityObserver.disconnect();
+  menuVisibilityObserver.takeRecords();
+  menuVisibilityState.isVisible = false;
   state.menuAnchor = anchor;
   state.menuChar = char;
 
@@ -628,24 +720,15 @@ function showCharMenu(anchor, char) {
   updateFavoriteAction();
 
   elements.charMenu.hidden = false;
-  const menuRect = elements.charMenu.getBoundingClientRect();
-  const anchorRect = anchor.getBoundingClientRect();
-  const margin = 8;
-
-  let left = anchorRect.left;
-  let top = anchorRect.bottom + margin;
-
-  if (left + menuRect.width > window.innerWidth - margin) {
-    left = window.innerWidth - menuRect.width - margin;
+  const position = positionCharMenu(anchor);
+  if (!position) {
+    hideCharMenu();
+    return;
   }
-  if (top + menuRect.height > window.innerHeight - margin) {
-    top = anchorRect.top - menuRect.height - margin;
-  }
+  const { left, top } = position;
 
-  left = Math.max(margin, left);
-  top = Math.max(margin, top);
-  elements.charMenu.style.left = `${left}px`;
-  elements.charMenu.style.top = `${top}px`;
+  menuAnchorObserver.observe(anchor);
+  menuVisibilityObserver.observe(elements.charMenu);
 
   if (prefersReducedMotion()) return;
 
@@ -707,6 +790,7 @@ function closestCharTarget(event) {
 
 function bindCharSurface(container, clickAction) {
   container.addEventListener('pointerover', event => {
+    if (isScrollInducedPointerBoundary(event)) return;
     const target = closestCharTarget(event);
     if (target) showCharMenu(target, target.dataset.char);
   });
@@ -715,6 +799,7 @@ function bindCharSurface(container, clickAction) {
     const target = closestCharTarget(event);
     if (!target) return;
     if (elements.charMenu.contains(event.relatedTarget)) return;
+    if (isScrollInducedPointerBoundary(event)) return;
     scheduleHideCharMenu();
   });
 
@@ -805,10 +890,21 @@ function bindEvents() {
   elements.charMenu.addEventListener('pointerenter', () => {
     clearTimeout(state.menuHideTimer);
   });
-  elements.charMenu.addEventListener('pointerleave', scheduleHideCharMenu);
+  elements.charMenu.addEventListener('pointerleave', event => {
+    if (!isScrollInducedPointerBoundary(event)) scheduleHideCharMenu();
+  });
   elements.charMenu.addEventListener('click', event => {
     const action = event.target.closest?.('[data-action]')?.dataset.action;
     if (action) handleCharMenuAction(action);
+  });
+
+  document.addEventListener('pointermove', event => {
+    lastPointerMoveAt = performance.now();
+    lastPointerX = event.clientX;
+    lastPointerY = event.clientY;
+  }, {
+    capture: true,
+    passive: true
   });
 
   document.addEventListener('pointerdown', event => {
@@ -819,8 +915,11 @@ function bindEvents() {
     hideCharMenu();
   });
 
-  window.addEventListener('resize', hideCharMenu);
-  window.addEventListener('scroll', hideCharMenu, true);
+  window.addEventListener('resize', scheduleCharMenuPositionUpdate);
+  window.addEventListener('scroll', onCharMenuScroll, {
+    capture: true,
+    passive: true
+  });
   window.addEventListener('beforeunload', () => client.terminate());
 }
 
