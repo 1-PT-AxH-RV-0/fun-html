@@ -583,13 +583,6 @@ body {
 }
 
 @media (max-width: 780px) {
-  /* On touch-sized layouts, stay clear of the fixed bottom navigation. */
-  .char-menu.char-menu-anchored {
-    top: auto;
-    bottom: calc(anchor(top) + 8px);
-    position-try-order: normal;
-  }
-
   .seeker-shell {
     padding: 10px;
   }

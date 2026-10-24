@@ -58,12 +58,18 @@ const state = {
 let menuAnimation = null;
 let toastAnimation = null;
 let menuLayoutFrame = 0;
+let menuFlipAnimation = null;
+let menuSide = null;
+let lastMenuLayoutTop = null;
 let activeNativeAnchor = null;
 let lastPointerX = null;
 let lastPointerY = null;
 
 // Native anchor positioning follows scrolling in the layout engine (no JS measuring).
-let supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
+// Embedded browsers can parse anchor CSS without applying its fallback correctly.
+// Use scroll-driven positioning only inside the iframe, not an idle timer.
+let supportsNativeAnchor = window.self === window.top &&
+  window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
   window.CSS.supports('top', 'anchor(bottom)') &&
   window.CSS.supports('position-try-fallbacks', '--seeker-menu-above');
 
@@ -81,8 +87,7 @@ function useLegacyMenuPositioning() {
   releaseNativeMenuAnchor();
 }
 
-// Observe the popup once, not the selected character.
-// Ignore notifications queued during a previous open/close cycle.
+// Observe only the popup, exactly once. Partial clipping is not an exit.
 let menuShownAt = -Infinity;
 const menuAnchorObserver = new IntersectionObserver(entries => {
   for (const entry of entries) {
@@ -90,33 +95,46 @@ const menuAnchorObserver = new IntersectionObserver(entries => {
       entry.target !== elements.charMenu ||
       elements.charMenu.hidden ||
       state.menuAnchor === null ||
-      entry.time < menuShownAt
+      entry.time < menuShownAt ||
+      menuFlipAnimation
     ) continue;
-    // When the native fallback fails during scrolling, recover once instead
-    // of leaving the menu clipped. Modern browsers still do zero scroll-time
-    // JS positioning work in the normal path.
-    if (supportsNativeAnchor && entry.intersectionRatio < 0.99 &&
-        state.menuAnchor.isConnected) {
-      const rect = entry.boundingClientRect;
-      const anchorRect = state.menuAnchor.getBoundingClientRect();
-      const { top, bottom } = getCharMenuViewport();
-      const roomBelow = bottom - anchorRect.bottom - 8;
-      const roomAbove = anchorRect.top - top - 8;
-      const wrongBelow = rect.bottom > bottom - 8 && roomAbove > roomBelow;
-      const wrongAbove = rect.top < top + 8 && roomBelow > roomAbove;
 
-      if (wrongBelow || wrongAbove) {
-        useLegacyMenuPositioning();
-        if (!positionCharMenu()) hideCharMenu();
-        continue;
-      }
-    }
-
-    if (!entry.isIntersecting || entry.intersectionRatio < 0.01) {
+    if (!entry.isIntersecting && isMenuOutsideViewport(entry.boundingClientRect)) {
       hideCharMenu();
     }
   }
-}, { threshold: [0, 0.01, 0.99] });
+}, { threshold: 0 });
+
+function isMenuOutsideViewport(rect) {
+  const { top, bottom } = getCharMenuViewport();
+  return rect.bottom <= top || rect.top >= bottom ||
+    rect.right <= 0 || rect.left >= window.innerWidth;
+}
+
+// FLIP animation only for a change of side, never for ordinary scrolling.
+function animateMenuSideChange(fromTop, toTop) {
+  const offset = fromTop - toTop;
+  if (Math.abs(offset) < 2 || prefersReducedMotion()) return;
+
+  menuFlipAnimation?.cancel();
+  menuAnimation?.cancel();
+  menuAnimation = null;
+  const animation = elements.charMenu.animate(
+    [
+      { transform: `translateY(${offset}px)` },
+      { transform: 'translateY(0)' }
+    ],
+    { duration: 190, easing: 'cubic-bezier(0.2, 0, 0, 1)' }
+  );
+  menuFlipAnimation = animation;
+  animation.onfinish = () => {
+    if (menuFlipAnimation !== animation) return;
+    menuFlipAnimation = null;
+    if (state.menuAnchor && isMenuOutsideViewport(elements.charMenu.getBoundingClientRect())) {
+      hideCharMenu();
+    }
+  };
+}
 
 function releaseNativeMenuAnchor() {
   activeNativeAnchor?.classList.remove('char-menu-anchor');
@@ -649,6 +667,10 @@ function hideCharMenu() {
   }
   const currentOpacity = getComputedStyle(elements.charMenu).opacity;
   state.menuAnchor = null;
+  menuFlipAnimation?.cancel();
+  menuFlipAnimation = null;
+  menuSide = null;
+  lastMenuLayoutTop = null;
   menuAnimation?.cancel();
 
   if (prefersReducedMotion()) {
@@ -687,32 +709,55 @@ function positionCharMenu(anchor = state.menuAnchor) {
   const { top: viewTop, bottom: viewBottom } = getCharMenuViewport();
   const roomBelow = viewBottom - anchorRect.bottom - margin;
   const roomAbove = anchorRect.top - viewTop - margin;
-  if (anchorRect.bottom <= viewTop || anchorRect.top >= viewBottom) return null;
   const shouldBeAbove = roomBelow < menuRect.height && roomAbove > roomBelow;
 
-  // Verify the actual result once when the popup opens. CSS.supports()
-  // checks syntax support, not whether the browser implements try-fallbacks.
   if (supportsNativeAnchor) {
+    // During an existing animation the visual rect includes its transform.
+    if (menuFlipAnimation) return menuRect;
     const placedAbove = menuRect.bottom <= anchorRect.top;
+    const placedBelow = menuRect.top >= anchorRect.bottom;
+    const side = placedAbove ? 'above' : placedBelow ? 'below' : menuSide;
     const wrongSide = shouldBeAbove
       ? !placedAbove && roomAbove >= menuRect.height
       : placedAbove && roomBelow >= menuRect.height;
-    if (!wrongSide) return menuRect;
+
+    if (!wrongSide) {
+      if (menuSide !== null && side !== null && side !== menuSide &&
+          lastMenuLayoutTop !== null) {
+        animateMenuSideChange(lastMenuLayoutTop, menuRect.top);
+      }
+      menuSide = side;
+      lastMenuLayoutTop = menuRect.top;
+      return menuRect;
+    }
     useLegacyMenuPositioning();
     menuRect = elements.charMenu.getBoundingClientRect();
   }
 
-  // Legacy showPop policy: below when it fits, otherwise use the side with
-  // more space; reevaluate on scrolling so it can flip in BOTH directions.
+  // Old showPop policy with VIEWPORT bounds: prefer below, flip when needed.
+  const side = shouldBeAbove ? 'above' : 'below';
+  const previousTop = menuRect.top;
   const maxLeft = Math.max(margin, window.innerWidth - menuRect.width - margin);
-  const maxTop = Math.max(viewTop + margin, viewBottom - menuRect.height - margin);
   const left = Math.max(margin, Math.min(anchorRect.left, maxLeft));
   const preferredTop = shouldBeAbove
     ? anchorRect.top - menuRect.height - margin
     : anchorRect.bottom + margin;
-  const top = Math.max(viewTop + margin, Math.min(preferredTop, maxTop));
+
+  // Clamp while the character is on screen. When it scrolls outside, allow
+  // the popup to follow it all the way outside before auto-dismissing.
+  const anchorInView = anchorRect.bottom > viewTop && anchorRect.top < viewBottom;
+  const maxTop = Math.max(viewTop + margin, viewBottom - menuRect.height - margin);
+  const top = anchorInView
+    ? Math.max(viewTop + margin, Math.min(preferredTop, maxTop))
+    : preferredTop;
+
   elements.charMenu.style.left = `${left}px`;
   elements.charMenu.style.top = `${top}px`;
+  if (menuSide !== null && side !== menuSide) {
+    animateMenuSideChange(previousTop, top);
+  }
+  menuSide = side;
+  lastMenuLayoutTop = top;
   return { left, top };
 }
 
@@ -730,7 +775,7 @@ function scheduleCharMenuPositionUpdate() {
 function onCharMenuScroll() {
   // Scroll never closes a still-visible popup. Cancel pointer-exit timers.
   clearTimeout(state.menuHideTimer);
-  if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
+  if (state.menuAnchor) scheduleCharMenuPositionUpdate();
 }
 
 function showCharMenu(anchor, char) {
@@ -748,6 +793,12 @@ function showCharMenu(anchor, char) {
     ? elements.charMenu.getBoundingClientRect()
     : null;
   menuAnimation?.cancel();
+  if (previousAnchor !== anchor) {
+    menuFlipAnimation?.cancel();
+    menuFlipAnimation = null;
+    menuSide = null;
+    lastMenuLayoutTop = null;
+  }
 
   state.menuAnchor = anchor;
   setNativeMenuAnchor(anchor);
@@ -957,13 +1008,8 @@ function bindEvents() {
     hideCharMenu();
   });
 
-  // The runtime probe may disable native anchoring after initialization.
-  window.addEventListener('resize', () => {
-    if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
-  });
-  window.visualViewport?.addEventListener('resize', () => {
-    if (!supportsNativeAnchor) scheduleCharMenuPositionUpdate();
-  });
+  window.addEventListener('resize', scheduleCharMenuPositionUpdate);
+  window.visualViewport?.addEventListener('resize', scheduleCharMenuPositionUpdate);
   window.addEventListener('scroll', onCharMenuScroll, {
     capture: true,
     passive: true
