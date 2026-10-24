@@ -48,10 +48,74 @@ async function inflateNative(compressed) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
-async function initialize(databaseUrl) {
+function reportInitProgress(phase, loaded = 0, total = 0) {
+  self.postMessage({
+    type: 'init-progress',
+    phase,
+    loaded,
+    total,
+    percent: total > 0
+      ? Math.min(100, Math.round((loaded / total) * 100))
+      : null
+  });
+}
+
+async function downloadDatabase(databaseUrl) {
+  reportInitProgress('download', 0, 0);
+
   const response = await fetch(databaseUrl, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Database HTTP ${response.status}`);
-  const compressed = new Uint8Array(await response.arrayBuffer());
+
+  const contentLength = Number(response.headers.get('content-length'));
+  const total =
+    Number.isFinite(contentLength) && contentLength > 0 ? contentLength : 0;
+
+  if (!response.body) {
+    const compressed = new Uint8Array(await response.arrayBuffer());
+    reportInitProgress(
+      'download',
+      compressed.byteLength,
+      total || compressed.byteLength
+    );
+    return compressed;
+  }
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let loaded = 0;
+  let lastPercent = -1;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value?.byteLength) continue;
+
+    chunks.push(value);
+    loaded += value.byteLength;
+
+    const percent = total > 0
+      ? Math.min(100, Math.round((loaded / total) * 100))
+      : null;
+    if (percent === null || percent !== lastPercent) {
+      lastPercent = percent;
+      reportInitProgress('download', loaded, total);
+    }
+  }
+
+  const compressed = new Uint8Array(loaded);
+  let offset = 0;
+  for (const chunk of chunks) {
+    compressed.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  reportInitProgress('download', loaded, total || loaded);
+  return compressed;
+}
+
+async function initialize(databaseUrl) {
+  const compressed = await downloadDatabase(databaseUrl);
+  reportInitProgress('loading');
   const db = unpack(await inflateNative(compressed));
 
   if (db.schema !== SEEKER_CONFIG.database.schema) {

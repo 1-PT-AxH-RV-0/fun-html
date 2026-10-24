@@ -7,6 +7,8 @@ export default class SeekerClient {
     this.searchGeneration = 0;
     this.pending = new Map();
     this.closed = false;
+    this.initProgressListeners = new Set();
+    this.lastInitProgress = null;
 
     this.ready = new Promise((resolve, reject) => {
       this.resolveReady = resolve;
@@ -15,6 +17,14 @@ export default class SeekerClient {
 
     this.worker.addEventListener('message', event => {
       const message = event.data ?? {};
+
+      if (message.type === 'init-progress') {
+        this.lastInitProgress = message;
+        for (const listener of this.initProgressListeners) {
+          listener(message);
+        }
+        return;
+      }
 
       if (message.type === 'ready') {
         this.resolveReady(message.stats);
@@ -45,6 +55,15 @@ export default class SeekerClient {
       type: 'init',
       payload: { databaseUrl: seekerDatabaseUrl }
     });
+  }
+
+  onInitProgress(listener) {
+    if (typeof listener !== 'function') return () => {};
+    this.initProgressListeners.add(listener);
+    if (this.lastInitProgress) listener(this.lastInitProgress);
+    return () => {
+      this.initProgressListeners.delete(listener);
+    };
   }
 
   async request(type, payload = {}) {
@@ -83,6 +102,7 @@ export default class SeekerClient {
   terminate() {
     if (this.closed) return;
     this.closed = true;
+    this.initProgressListeners.clear();
     this.worker.terminate();
     for (const { reject } of this.pending.values()) {
       reject(new Error('Seeker worker has been terminated'));

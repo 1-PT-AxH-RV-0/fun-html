@@ -64,7 +64,8 @@ let lastPointerY = null;
 
 // Native anchor positioning follows scrolling in the layout engine (no JS measuring).
 const supportsNativeAnchor = window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
-  window.CSS.supports('top', 'anchor(bottom)');
+  window.CSS.supports('top', 'anchor(bottom)') &&
+  window.CSS.supports('position-try-fallbacks', '--seeker-menu-above');
 
 // Observe the popup once, not the selected character.
 // Ignore notifications queued during a previous open/close cycle.
@@ -932,10 +933,21 @@ function restoreSettings() {
 
 function initReadyState() {
   elements.datasetStatus.dataset.state = 'loading';
-  elements.datasetStatus.textContent = '正在加载字形数据…';
+  elements.datasetStatus.textContent = '正在下载字形数据 0%';
+
+  const stopProgress = client.onInitProgress(progress => {
+    if (progress.phase === 'download') {
+      elements.datasetStatus.textContent = Number.isFinite(progress.percent)
+        ? `正在下载字形数据 ${progress.percent}%`
+        : '正在下载字形数据…';
+    } else if (progress.phase === 'loading') {
+      elements.datasetStatus.textContent = '正在加载字形数据…';
+    }
+  });
 
   client.ready
     .then(stats => {
+      stopProgress();
       elements.datasetStatus.dataset.state = 'ready';
       const tangutVersion = stats.tangutUnicode
         ? ` · 西夏 IDS ${stats.tangutUnicode}`
@@ -945,6 +957,7 @@ function initReadyState() {
         `Unicode ${stats.unicode ?? '18.0'}${tangutVersion}`;
     })
     .catch(error => {
+      stopProgress();
       elements.datasetStatus.dataset.state = 'error';
       elements.datasetStatus.textContent = '字形数据加载失败';
       elements.searchStatus.textContent = `初始化失败：${error.message}`;

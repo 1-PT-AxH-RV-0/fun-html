@@ -477,8 +477,12 @@ body {
   position-anchor: --seeker-menu-anchor;
   left: clamp(8px, anchor(left), calc(100vw - min(230px, 100vw - 20px) - 8px));
   top: calc(anchor(bottom) + 8px);
-  position-try-fallbacks: flip-block;
-  position-try-order: most-height;
+  position-try-fallbacks: --seeker-menu-above;
+}
+
+@position-try --seeker-menu-above {
+  top: auto;
+  bottom: calc(anchor(top) + 8px);
 }
 
 .char-preview {
