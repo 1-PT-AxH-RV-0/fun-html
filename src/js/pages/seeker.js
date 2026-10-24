@@ -65,13 +65,11 @@ let activeNativeAnchor = null;
 let lastPointerX = null;
 let lastPointerY = null;
 
-// Native anchor positioning follows scrolling in the layout engine (no JS measuring).
-// Embedded browsers can parse anchor CSS without applying its fallback correctly.
-// Use scroll-driven positioning only inside the iframe, not an idle timer.
-let supportsNativeAnchor = window.self === window.top &&
+// Native anchors move the popup with scrolling; JS only chooses which side to use.
+let supportsNativeAnchor =
   window.CSS?.supports?.('anchor-name', '--seeker-menu-anchor') &&
-  window.CSS.supports('top', 'anchor(bottom)') &&
-  window.CSS.supports('position-try-fallbacks', '--seeker-menu-above');
+  window.CSS.supports('position-anchor', '--seeker-menu-anchor') &&
+  window.CSS.supports('top', 'anchor(bottom)');
 
 // getBoundingClientRect uses layout-viewport coordinates, including visualViewport offsets.
 function getCharMenuViewport() {
@@ -150,6 +148,32 @@ function setNativeMenuAnchor(anchor) {
   elements.charMenu.classList.add('char-menu-anchored');
   elements.charMenu.style.left = '';
   elements.charMenu.style.top = '';
+}
+
+function updateNativeMenuSide(anchor = state.menuAnchor) {
+  if (!supportsNativeAnchor || !anchor?.isConnected || elements.charMenu.hidden) return;
+
+  const anchorRect = anchor.getBoundingClientRect();
+  const { top, bottom } = getCharMenuViewport();
+  const roomBelow = bottom - anchorRect.bottom - 8;
+  const roomAbove = anchorRect.top - top - 8;
+  const side = roomBelow < elements.charMenu.offsetHeight && roomAbove > roomBelow
+    ? 'above'
+    : 'below';
+  if (side === menuSide) return;
+
+  if (menuFlipAnimation) {
+    menuFlipAnimation.cancel();
+    menuFlipAnimation = null;
+    menuAnimation = null;
+  }
+  const previousTop = elements.charMenu.getBoundingClientRect().top;
+  elements.charMenu.dataset.menuSide = side;
+  const nextTop = elements.charMenu.getBoundingClientRect().top;
+
+  if (menuSide !== null) animateMenuSideChange(previousTop, nextTop);
+  menuSide = side;
+  lastMenuLayoutTop = nextTop;
 }
 
 function getStored(key, fallback = '0') {
@@ -712,17 +736,31 @@ function positionCharMenu(anchor = state.menuAnchor) {
   const shouldBeAbove = roomBelow < menuRect.height && roomAbove > roomBelow;
 
   if (supportsNativeAnchor) {
-    // During an existing animation the visual rect includes its transform.
+    // Avoid interpreting an in-flight FLIP transform as the layout position.
     if (menuFlipAnimation) return menuRect;
-    const placedAbove = menuRect.bottom <= anchorRect.top;
-    const placedBelow = menuRect.top >= anchorRect.bottom;
-    const side = placedAbove ? 'above' : placedBelow ? 'below' : menuSide;
-    const wrongSide = shouldBeAbove
-      ? !placedAbove && roomAbove >= menuRect.height
-      : placedAbove && roomBelow >= menuRect.height;
 
-    if (!wrongSide) {
-      if (menuSide !== null && side !== null && side !== menuSide &&
+    const previousSide = menuSide;
+    const side = shouldBeAbove ? 'above' : 'below';
+    elements.charMenu.dataset.menuSide = side;
+    menuRect = elements.charMenu.getBoundingClientRect();
+
+    // Verify actual anchor placement once. CSS.supports() alone is not enough.
+    const expectedTop = side === 'above'
+      ? anchorRect.top - menuRect.height - margin
+      : anchorRect.bottom + margin;
+    const expectedLeft = Math.max(
+      margin,
+      Math.min(
+        anchorRect.left,
+        window.innerWidth - Math.min(230, window.innerWidth - 20) - margin
+      )
+    );
+    const isActuallyAnchored =
+      Math.abs(menuRect.top - expectedTop) < 4 &&
+      Math.abs(menuRect.left - expectedLeft) < 4;
+
+    if (isActuallyAnchored) {
+      if (previousSide !== null && previousSide !== side &&
           lastMenuLayoutTop !== null) {
         animateMenuSideChange(lastMenuLayoutTop, menuRect.top);
       }
@@ -730,6 +768,7 @@ function positionCharMenu(anchor = state.menuAnchor) {
       lastMenuLayoutTop = menuRect.top;
       return menuRect;
     }
+
     useLegacyMenuPositioning();
     menuRect = elements.charMenu.getBoundingClientRect();
   }
@@ -773,9 +812,22 @@ function scheduleCharMenuPositionUpdate() {
 }
 
 function onCharMenuScroll() {
-  // Scroll never closes a still-visible popup. Cancel pointer-exit timers.
+  // Do not wait for the next animation frame to move a JS-positioned popup.
+  // In native-anchor mode, the browser moves it; JS only changes its side.
   clearTimeout(state.menuHideTimer);
-  if (state.menuAnchor) scheduleCharMenuPositionUpdate();
+  if (!state.menuAnchor) return;
+
+  if (menuLayoutFrame) {
+    cancelAnimationFrame(menuLayoutFrame);
+    menuLayoutFrame = 0;
+  }
+
+  if (supportsNativeAnchor) {
+    updateNativeMenuSide();
+    return;
+  }
+
+  if (!positionCharMenu()) hideCharMenu();
 }
 
 function showCharMenu(anchor, char) {
