@@ -468,7 +468,7 @@ body {
   box-shadow: 0 8px 24px var(--md-sys-color-shadow-alpha-33);
 }
 
-/* Native anchors track scrolling; the data attribute chooses the side explicitly. */
+/* Native anchors track scrolling and automatically choose the fitting side. */
 .char-menu-anchor {
   anchor-name: --seeker-menu-anchor;
 }
@@ -478,11 +478,7 @@ body {
   left: clamp(8px, anchor(left), calc(100vw - min(230px, 100vw - 20px) - 8px));
   top: calc(anchor(bottom) + 8px);
   bottom: auto;
-}
-
-.char-menu.char-menu-anchored[data-menu-side='above'] {
-  top: auto;
-  bottom: calc(anchor(top) + 8px);
+  position-try-fallbacks: flip-block;
 }
 
 .char-preview {
