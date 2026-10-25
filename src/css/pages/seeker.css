@@ -461,6 +461,13 @@ body {
   position: fixed;
   z-index: 1000;
   width: 230px;
+  /* Keep fallback geometry stable while the visible surface is in transit. */
+  pointer-events: none;
+}
+
+.char-menu-surface {
+  width: 100%;
+  pointer-events: auto;
   padding: 10px;
   border: 1px solid var(--md-sys-color-outline);
   border-radius: 12px;
@@ -479,6 +486,39 @@ body {
   top: calc(anchor(bottom) + 8px);
   bottom: auto;
   position-try-fallbacks: flip-block;
+}
+
+/* Signal only actual CSS fallback changes; no scroll polling is needed. */
+@supports (container-type: anchored) {
+  .char-menu.char-menu-anchored {
+    container-type: anchored;
+    container-name: seeker-menu;
+  }
+
+  .char-menu-anchored > .char-menu-side-signal {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    animation: seeker-menu-below 1ms;
+  }
+
+  @container seeker-menu anchored(fallback: flip-block) {
+    .char-menu-anchored > .char-menu-side-signal {
+      animation-name: seeker-menu-above;
+    }
+  }
+}
+
+@keyframes seeker-menu-below {
+  from { opacity: 0; }
+  to { opacity: 0; }
+}
+
+@keyframes seeker-menu-above {
+  from { opacity: 0; }
+  to { opacity: 0; }
 }
 
 .char-preview {

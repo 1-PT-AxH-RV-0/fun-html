@@ -24,16 +24,23 @@ const toolButtons = document.querySelectorAll('.tool-button');
 const toggleNavButton = document.getElementById('toggle-nav-button');
 const titleH1 = document.getElementById('title-h1');
 
-function animateContent() {
-  content.style.transition = 'none';
-  content.style.transform = 'translateY(20px)';
-  content.style.opacity = '0';
+let contentAnimation = null;
 
-  setTimeout(() => {
-    content.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-    content.style.transform = 'translateY(0)';
-    content.style.opacity = '1';
-  }, 50);
+function animateContent() {
+  contentAnimation?.cancel();
+  contentAnimation = null;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Animate opacity only: a persistent transform on an iframe ancestor can
+  // change its compositing context. WAAPI leaves no inline style behind.
+  const animation = content.animate(
+    [{ opacity: 0 }, { opacity: 1 }],
+    { duration: 300, delay: 50, fill: 'backwards', easing: 'ease' }
+  );
+  contentAnimation = animation;
+  animation.onfinish = () => {
+    if (contentAnimation === animation) contentAnimation = null;
+  };
 }
 
 function updateURLParams(newParams) {
