@@ -461,7 +461,7 @@ body {
   position: fixed;
   z-index: 1000;
   width: 230px;
-  /* Keep fallback geometry stable while the visible surface is in transit. */
+  /* Invisible placement box: only its geometry participates in CSS fallback. */
   pointer-events: none;
 }
 
@@ -488,37 +488,41 @@ body {
   position-try-fallbacks: flip-block;
 }
 
-/* Signal only actual CSS fallback changes; no scroll polling is needed. */
+/* The visible box has its own stable below-anchor position. A fallback change
+   moves only this layer's transform, so a delayed query cannot first paint it
+   at the new endpoint and then pull it back. CSS also retargets reversals. */
 @supports (container-type: anchored) {
   .char-menu.char-menu-anchored {
     container-type: anchored;
     container-name: seeker-menu;
+    height: var(--menu-height);
   }
 
-  .char-menu-anchored > .char-menu-side-signal {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    pointer-events: none;
-    animation: seeker-menu-below 1ms;
+  .char-menu-anchored > .char-menu-motion {
+    position: fixed;
+    position-anchor: --seeker-menu-anchor;
+    left: clamp(8px, anchor(left), calc(100vw - min(230px, 100vw - 20px) - 8px));
+    top: calc(anchor(bottom) + 8px);
+    width: inherit;
+    transform: translateY(0);
+    transition: transform 240ms ease;
   }
 
   @container seeker-menu anchored(fallback: flip-block) {
-    .char-menu-anchored > .char-menu-side-signal {
-      animation-name: seeker-menu-above;
+    .char-menu-anchored > .char-menu-motion {
+      transform: translateY(calc(-100% - var(--menu-anchor-height) - 16px));
     }
+  }
+
+  .char-menu-anchored.char-menu-preparing > .char-menu-motion {
+    transition: none;
   }
 }
 
-@keyframes seeker-menu-below {
-  from { opacity: 0; }
-  to { opacity: 0; }
-}
-
-@keyframes seeker-menu-above {
-  from { opacity: 0; }
-  to { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .char-menu-anchored > .char-menu-motion {
+    transition: none;
+  }
 }
 
 .char-preview {

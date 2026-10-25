@@ -35,7 +35,7 @@ const elements = {
   resultSections: document.getElementById('resultSections'),
   charMenu: document.getElementById('charMenu'),
   charMenuSurface: document.getElementById('charMenuSurface'),
-  menuSideSignal: document.getElementById('menuSideSignal'),
+  charMenuMotion: document.getElementById('charMenuMotion'),
   menuChar: document.getElementById('menuChar'),
   menuCode: document.getElementById('menuCode'),
   menuExternal: document.getElementById('menuExternal'),
@@ -58,8 +58,7 @@ const state = {
 };
 
 let menuAnimation = null;
-let menuFlipAnimation = null;
-let menuCssSide = null;
+let menuReadyFrame = 0;
 let toastAnimation = null;
 let menuLayoutFrame = 0;
 let activeNativeAnchor = null;
@@ -73,6 +72,22 @@ const supportsNativeAnchor =
   window.CSS.supports('top', 'anchor(bottom)') &&
   window.CSS.supports('position-try-fallbacks', 'flip-block');
 
+const supportsNativeSideQueries = supportsNativeAnchor &&
+  window.CSS.supports('container-type', 'anchored');
+
+// These measurements run only when content/anchor dimensions change.
+// A transform does not change the surface's border-box size.
+const menuSizeObserver = new ResizeObserver(entries => {
+  if (elements.charMenu.hidden || !state.menuAnchor) return;
+  for (const entry of entries) {
+    const property = entry.target === elements.charMenuSurface ? '--menu-height'
+      : entry.target === state.menuAnchor ? '--menu-anchor-height' : null;
+    if (!property) continue;
+    const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.target.offsetHeight;
+    if (height > 0) elements.charMenu.style.setProperty(property, `${height}px`);
+  }
+});
+
 // getBoundingClientRect uses layout-viewport coordinates, including visualViewport offsets.
 function getCharMenuViewport() {
   const view = window.visualViewport;
@@ -85,11 +100,11 @@ let menuShownAt = -Infinity;
 const menuAnchorObserver = new IntersectionObserver(entries => {
   for (const entry of entries) {
     if (
-      entry.target !== elements.charMenu ||
+      entry.target !== elements.charMenuMotion ||
       elements.charMenu.hidden ||
       state.menuAnchor === null ||
       entry.time < menuShownAt ||
-      menuFlipAnimation
+      menuReadyFrame
     ) continue;
 
     if (!entry.isIntersecting && isMenuOutsideViewport(entry.boundingClientRect)) {
@@ -104,58 +119,35 @@ function isMenuOutsideViewport(rect) {
     rect.right <= 0 || rect.left >= window.innerWidth;
 }
 
-function cancelMenuFlip() {
-  menuFlipAnimation?.cancel();
-  menuFlipAnimation = null;
+function cancelMenuPreparation() {
+  if (menuReadyFrame) cancelAnimationFrame(menuReadyFrame);
+  menuReadyFrame = 0;
 }
 
-function onNativeMenuSideChange(event) {
-  if (event.target !== elements.menuSideSignal ||
-      elements.charMenu.hidden || !state.menuAnchor?.isConnected) return;
-  const side = event.animationName === 'seeker-menu-above' ? 'above'
-    : event.animationName === 'seeker-menu-below' ? 'below' : null;
-  if (!side || side === menuCssSide) return;
-
-  // Finish an entrance/character-switch before taking ownership of transform.
-  menuAnimation?.finish();
-  const transform = getComputedStyle(elements.charMenuSurface).transform;
-  const translateY = transform === 'none' ? 0 : new DOMMatrixReadOnly(transform).m42;
-  // Measure only the stable shell. The surface's in-flight transform must
-  // never feed back into fallback selection or side detection.
-  const rect = elements.charMenu.getBoundingClientRect();
-  const anchorRect = state.menuAnchor.getBoundingClientRect();
-  const layoutTop = rect.top;
-  const actualSide = layoutTop < anchorRect.top ? 'above' : 'below';
-  // CSS animation events are asynchronous: discard an obsolete notification.
-  if (side !== actualSide) return;
-
-  const previousSide = menuCssSide;
-  menuCssSide = side;
-  if (!previousSide) return;
-  const previousTop = previousSide === 'above'
-    ? anchorRect.top - rect.height - 8
-    : anchorRect.bottom + 8;
-  const offset = previousTop - layoutTop + translateY;
-  cancelMenuFlip();
-  if (prefersReducedMotion() || Math.abs(offset) < 1) return;
-
-  // Invert the side change, including the residual offset of a reversed FLIP.
-  // The browser continues moving the underlying CSS anchor while this plays.
-  const animation = elements.charMenuSurface.animate(
-    [{ transform: `translateY(${offset}px)` }, { transform: 'translateY(0)' }],
-    { duration: 240, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)' }
-  );
-  menuFlipAnimation = animation;
-  animation.onfinish = () => {
-    if (menuFlipAnimation !== animation) return;
-    menuFlipAnimation = null;
-    if (state.menuAnchor && isMenuOutsideViewport(elements.charMenu.getBoundingClientRect())) {
-      hideCharMenu();
-    }
-  };
+function prepareNativeMenuMotion(position, anchor) {
+  if (!supportsNativeSideQueries) return;
+  const anchorRect = anchor.getBoundingClientRect();
+  // Freeze the initial side while the anchored query takes its first snapshot.
+  // Only show/character-switch performs this setup, never ordinary scrolling.
+  elements.charMenuMotion.style.transform =
+    `translateY(${position.top - anchorRect.bottom - 8}px)`;
+  menuReadyFrame = requestAnimationFrame(() => {
+    menuReadyFrame = requestAnimationFrame(() => {
+      menuReadyFrame = 0;
+      elements.charMenuMotion.style.removeProperty('transform');
+      // Resolve the query's current endpoint with transitions disabled first.
+      getComputedStyle(elements.charMenuMotion).transform;
+      elements.charMenu.classList.remove('char-menu-preparing');
+      if (state.menuAnchor &&
+          isMenuOutsideViewport(elements.charMenuMotion.getBoundingClientRect())) {
+        hideCharMenu();
+      }
+    });
+  });
 }
 
 function releaseNativeMenuAnchor() {
+  if (activeNativeAnchor) menuSizeObserver.unobserve(activeNativeAnchor);
   activeNativeAnchor?.classList.remove('char-menu-anchor');
   activeNativeAnchor = null;
   elements.charMenu.classList.remove('char-menu-anchored');
@@ -166,6 +158,7 @@ function setNativeMenuAnchor(anchor) {
   if (activeNativeAnchor !== anchor) releaseNativeMenuAnchor();
   activeNativeAnchor = anchor;
   anchor.classList.add('char-menu-anchor');
+  if (supportsNativeSideQueries) menuSizeObserver.observe(anchor);
   elements.charMenu.classList.add('char-menu-anchored');
   elements.charMenu.style.left = '';
   elements.charMenu.style.top = '';
@@ -688,8 +681,7 @@ function hideCharMenu() {
   const currentOpacity = currentStyle.opacity;
   const currentTransform = currentStyle.transform;
   state.menuAnchor = null;
-  menuCssSide = null;
-  cancelMenuFlip();
+  cancelMenuPreparation();
   menuAnimation?.cancel();
 
   if (prefersReducedMotion()) {
@@ -799,8 +791,8 @@ function showCharMenu(anchor, char) {
     : null;
   menuAnimation?.cancel();
   menuAnimation = null;
-  cancelMenuFlip();
-  menuCssSide = null;
+  cancelMenuPreparation();
+  elements.charMenu.classList.add('char-menu-preparing');
   state.menuAnchor = anchor;
   setNativeMenuAnchor(anchor);
   state.menuChar = char;
@@ -820,16 +812,17 @@ function showCharMenu(anchor, char) {
 
   menuShownAt = performance.now();
   elements.charMenu.hidden = false;
+  if (supportsNativeSideQueries) {
+    elements.charMenu.style.setProperty('--menu-height', `${elements.charMenuSurface.offsetHeight}px`);
+    elements.charMenu.style.setProperty('--menu-anchor-height', `${anchor.offsetHeight}px`);
+  }
   const position = positionCharMenu(anchor);
   if (!position) {
     hideCharMenu();
     return;
   }
   const { left, top } = position;
-  if (supportsNativeAnchor) {
-    // Establish a baseline on show, before applying any visual transform.
-    menuCssSide = top < anchor.getBoundingClientRect().top ? 'above' : 'below';
-  }
+  prepareNativeMenuMotion(position, anchor);
 
   if (prefersReducedMotion()) return;
 
@@ -992,7 +985,6 @@ function bindEvents() {
     showCharMenu(target, char);
   });
 
-  elements.charMenu.addEventListener('animationstart', onNativeMenuSideChange);
   elements.charMenu.addEventListener('pointerenter', () => {
     clearTimeout(state.menuHideTimer);
   });
@@ -1080,7 +1072,8 @@ function init() {
   restoreSettings();
   loadShortcuts();
   bindEvents();
-  menuAnchorObserver.observe(elements.charMenu);
+  menuAnchorObserver.observe(elements.charMenuMotion);
+  if (supportsNativeSideQueries) menuSizeObserver.observe(elements.charMenuSurface);
   initReadyState();
 }
 
